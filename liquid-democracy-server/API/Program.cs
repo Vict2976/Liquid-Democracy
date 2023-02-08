@@ -1,4 +1,12 @@
+using Core;
+using Entities;
+
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("liquiddemocracy");
+builder.Services.AddDbContext<LiquidDemocracyContext>(options => options.UseSqlServer(connectionString, options => options.EnableRetryOnFailure(5)));
+builder.Services.AddScoped<ILiquidDemocracyContext, LiquidDemocracyContext>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Add services to the container.
 
