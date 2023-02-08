@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>Liquid_Democracy_WepAPI</RootNamespace>
+    <RootNamespace>liquid_democracy_server</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
