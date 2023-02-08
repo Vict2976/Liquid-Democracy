@@ -1,1 +1,1 @@
-docker run --rm -d -p 5093:5093/tcp liquiddemocracywepapi:latest 
+docker run --rm -d -p 5000:5000/tcp liquiddemocracy:latest
