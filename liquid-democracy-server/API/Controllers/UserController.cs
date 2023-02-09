@@ -28,6 +28,4 @@ public class UserController : ControllerBase
         var response = await _repository.ReadAsync(Id);
         return response;
     }
-
-
 }

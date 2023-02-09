@@ -3,8 +3,8 @@ using Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("liquiddemocracy");
-builder.Services.AddDbContext<LiquidDemocracyContext>(options => options.UseSqlServer(connectionString, options => options.EnableRetryOnFailure(5)));
+builder.Services.AddDbContext<LiquidDemocracyContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddScoped<ILiquidDemocracyContext, LiquidDemocracyContext>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
@@ -17,6 +17,11 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<LiquidDemocracyContext>();
+    db.Database.Migrate();
+}
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -24,10 +29,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseSwagger();
+app.UseSwaggerUI();
+
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
 
 app.Run();
