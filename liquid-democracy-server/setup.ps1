@@ -1,6 +1,7 @@
 $password = New-Guid
 docker ps -aq | xargs docker stop
-if(echo uname -m == "x86_64") {
+$string = uname -v
+if ($string -clike "*/RELEASE_X86_64*") { 
     docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=$password" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
 } else {
     docker run --cap-add SYS_PTRACE -e 'ACCEPT_EULA=1' -e "SA_PASSWORD=$password" -p 1433:1433 -d mcr.microsoft.com/azure-sql-edge
