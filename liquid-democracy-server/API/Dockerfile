@@ -1,8 +1,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
-EXPOSE 5000
+EXPOSE 5093
 
-ENV ASPNETCORE_URLS=http://+:5000
+ENV ASPNETCORE_URLS=http://+:5093
 
 ENV ASPNETCORE_ENVIRONMENT=Development
 

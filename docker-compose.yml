@@ -6,7 +6,7 @@ services:
   liquiddemocracyserver:
     image: liquiddemocracy
     ports:
-      - "5000:5000"
+      - "5093:5093"
 
   liquiddemocracyweb:
     image: liquiddemocracyweb
@@ -18,5 +18,6 @@ services:
     ports:
       - "1433:1433"
     environment:
+        TrustServerCertificate: True
         SA_PASSWORD: "S3cur3P@ssW0rd!"
         ACCEPT_EULA: "Y"
