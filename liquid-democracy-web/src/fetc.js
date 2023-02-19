@@ -1,4 +1,7 @@
 
+let id;
+let website; 
+
 export function fetchingMaterial(){
     var myHeaders = new Headers();
     myHeaders.append("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjRiMzBjNDFiOWJjNTRkNmE5MDVjYjQwYmYwOGJhMWRiIiwidHlwIjoiSldUIn0.eyJhdWQiOlsiaWRlbnRpZmljYXRpb24iLCJodHRwczovL2xvZ2luLXRlc3QuaWRmeS5uby9yZXNvdXJjZXMiXSwiY2xpZW50X2lkIjoidGZhMGRjNzliN2E4ZjQ5NDliYWY3ZWYzMDAwYjIzMDk1IiwiY2xpZW50X3NhdCI6IkFjY291bnQiLCJjbGllbnRfc2FpIjoiYTI5NGRlOTctZDYzZi00ZWVhLWI5Y2QtYTBlNjdhZjExNjc5IiwiY2xpZW50X293bmVydHlwZSI6IkFjY291bnQiLCJjbGllbnRfb3duZXJpZCI6ImEyOTRkZTk3LWQ2M2YtNGVlYS1iOWNkLWEwZTY3YWYxMTY3OSIsImNsaWVudF9lbnYiOiJUZXN0IiwianRpIjoiNzU4MDBDN0QzQzI5QjQ3MEI0ODA2NDJCMkZGOTU0QUIiLCJpYXQiOjE2NzY4MTc2MDcsInRlbmFudCI6eyJwIjoiaWRlbnRpZnkiLCJ0IjoiQWNjb3VudCIsImkiOiJhMjk0ZGU5Ny1kNjNmLTRlZWEtYjljZC1hMGU2N2FmMTE2NzkiLCJhIjoiVXNlciJ9LCJzY29wZSI6WyJpZGVudGlmeSJdLCJuYmYiOjE2NzY4MTc2MDcsImV4cCI6MTY3NjgyMTIwNywiaXNzIjoiaHR0cHM6Ly9sb2dpbi10ZXN0LmlkZnkubm8ifQ.L6Djx_t5iDYwlMrSLGx-0Y4YvqXhINLZV9d5ufWSkdPIoWyVR-RqDEwx6QJzO9zXNMfL8g-zpnxFxUHmEyZXl25RLPB8ULXPODpmQcavI7GuRYdirssNEE-cm-F1mj5_NDjzws97nyBNUCh5zYyjCPjqVmknvQbqSblSYN16FvvhIruEfZb72rkJyIBxOqvMbcns5HV1DNBHrbMIySZY4p7m7KibOByWINCqxKO7EMifCxBPPhw9DU3hxaTmafDVixt5YOShqOoQhHhicapyN-0Lc02ScIlxW3sa-wMDryoFSz9HcLloGaU5oRk5uwWvfpxkUBn3twmOdxHPubGHGw");
@@ -36,8 +39,15 @@ export function fetchingMaterial(){
 }
 
 
+/* export function getUrlForSession(json)  //skal returnere URL'en for session
+{
+    website = json.url;
+    console.log(website);
+    //return website
 
- export function fetchAuthenticationController(){
+} */
+
+ export async function fetchAuthenticationController(){
     var myHeaders = new Headers();
     var requestOptions = {
         method: 'GET',
@@ -46,9 +56,19 @@ export function fetchingMaterial(){
         //redirect: 'follow'
         };
 
-    fetch("http://localhost:5093/authentication-session/getIDToken", requestOptions)
-    .then(response => response.text())
-    .then(result => console.log(result))
-    .catch(error => console.log('error', error));
+    var response = await fetch("http://localhost:5093/authentication-session/getIDToken", requestOptions)
+
+    if (response.ok) { // if HTTP-status is 200-299
+        // get the response body (the method explained below)
+        let json = await response.json();
+        let url = json.url;
+        //console.log(url);
+        window.location.href=url;
+      } else {
+        alert("HTTP-Error: " + response.status);
+      }
+    //.then(response => (extractDataFetch(response.text())))
+    //.then(result => console.log(result))
+    //.catch(error => console.log('error', error));
 
 } 
