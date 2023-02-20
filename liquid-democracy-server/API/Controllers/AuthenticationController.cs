@@ -63,8 +63,6 @@ namespace Server
 
             });
 
-            Console.WriteLine(session);
-
             return session; 
         }
 

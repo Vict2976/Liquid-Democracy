@@ -1,8 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { fetchingMaterial } from './fetc';
-import { fetchAuthenticationController } from './fetc';
+import { fetchStartMitIDSession } from './fetch';
 import { time } from 'console';
 
 function App() {
@@ -10,7 +9,8 @@ function App() {
     <section>
     <h1> Welcome to the authentication process </h1>
         <button onClick={() => {
-          var fetchData = fetchAuthenticationController();
+          var fetchData = fetchStartMitIDSession();
+          console.log(fetchData);
         }
           }>
           Login with MitId
