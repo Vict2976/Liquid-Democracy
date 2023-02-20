@@ -8,7 +8,7 @@
         //redirect: 'follow'
         };
 
-    var response = await fetch("http://localhost:5093/authentication-session/getIDToken", requestOptions)
+    var response = await fetch("https://localhost:7236/authentication-session/getIDToken", requestOptions)
 
     if (response.ok) { // if HTTP-status is 200-299
         // get the response body (the method explained below)
