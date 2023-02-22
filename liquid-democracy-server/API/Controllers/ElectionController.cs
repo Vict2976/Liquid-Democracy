@@ -28,4 +28,12 @@ public class ElectionController : ControllerBase
         var elections = await _repository.ReadAllAsync();
         return elections;
     }
+
+    [AllowAnonymous]
+    [HttpGet ("{electionId}")]
+    public async Task<Election?> GetElectionByID(int electionId){
+        var election = await _repository.GetElectionByIDAsync(electionId);
+        return election;
+    }
+
 }
