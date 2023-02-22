@@ -8,7 +8,6 @@ public class LiquidDemocracyContext : DbContext, ILiquidDemocracyContext
     public DbSet<Election> Elections => Set<Election>();
     public DbSet<Votings> Votings => Set<Votings>();
 
-
     public LiquidDemocracyContext(DbContextOptions<LiquidDemocracyContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

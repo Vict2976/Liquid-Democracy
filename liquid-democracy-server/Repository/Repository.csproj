@@ -16,4 +16,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../Security/Security.csproj" />
+    <ProjectReference Include="../Core/Core.csproj" />
+  </ItemGroup>
+
 </Project>

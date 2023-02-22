@@ -1,8 +1,11 @@
 namespace Repository;
 
+using Core;
+
 public interface IUserRepository
-{
-    public Task<User?> CreateAsync(string name);
-    public Task<IEnumerable<User>> ReadAllAsync();
+{ 
+    Response<User> Create(string username, string email, string password);
+    Task<IEnumerable<User>> ReadAllAsync();
+    Response<User> GetByUsername(string username);
 
 }
