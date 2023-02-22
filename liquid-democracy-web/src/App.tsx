@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import MitID from './pages/MitID';
 import HomePage from './pages/HomePage';
+import Election from './pages/Election';
 
 export default function App() {
   return (
@@ -20,6 +21,8 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/MitID" element={<MitID />} />
+        <Route path="/Election" element={<Election/>} />
+
       </Routes>
     </>
   );
