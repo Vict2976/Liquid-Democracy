@@ -1,6 +1,10 @@
 using Repository;
+using Security;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<HashSettings>(builder.Configuration.GetSection(nameof(HashSettings)));
+builder.Services.AddScoped<IHasher, Hasher>();
 
 builder.Services.AddDbContext<LiquidDemocracyContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("liquiddemocracy")));
@@ -9,8 +13,6 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICandidateRepository, CandidateRepository>();
 builder.Services.AddScoped<IElectionRepository, ElectionRepository>();
 builder.Services.AddScoped<IVotingsRepository, VotingsRepository>();
-
-
 // Add services to the container.
 
 builder.Services.AddControllers();
