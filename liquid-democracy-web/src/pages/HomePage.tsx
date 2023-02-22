@@ -3,16 +3,15 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { Election } from '../builder/Interface';
 import { AppService } from '../services/app.service';
+import { useNavigate, createSearchParams, Link} from "react-router-dom";
 
 
 function HomePage() {
   const [elections, setElections] = useState<Election[]>();
-
   const appService = new AppService();
-
   useEffect(() => {
       appService.getAllElections().then((response) => {
-      console.log(response);
+      //console.log(response);
       setElections(response);
     });
   }, []);
@@ -22,7 +21,7 @@ function HomePage() {
     <div className="App">
       <header className="App-header">
         {elections.map((ele) => (
-          <view key={ele.electionid}>
+          <view key={ele.electionId}>
             <view>
             <Card style={{ width: '18rem' }}>
               <Card.Img variant="top" src="holder.js/100px180" />
@@ -31,13 +30,9 @@ function HomePage() {
                 <Card.Text>
                   Votes: {ele.amountOfVotes}
                 </Card.Text>
-                <Button
-                  onClick={ () => {
-                    console.log(elections);
-                  }}
-                >
-                Cliek here
-                </Button>
+                <Link to = "/Election" state={ele.electionId} onClick={()=> console.log(elections)}>
+                  See Election
+                  </Link>
               </Card.Body>
             </Card>
             </view>
