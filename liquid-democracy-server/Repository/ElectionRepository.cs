@@ -31,4 +31,12 @@ public class ElectionRepository : IElectionRepository
             .ToListAsync();
         return elections;
     }
+
+
+
+    public async Task<Election?> GetElectionByIDAsync(int electionId){
+        var election = await _context.Elections.Where(c => c.ElectionId == electionId).Select(c=> c).FirstAsync();
+
+        return election;
+    }
 }
