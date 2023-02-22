@@ -19,6 +19,12 @@ namespace Server
     [ApiController]
     public class AuthenticationApiController : Controller
     {
+        private readonly IConfiguration _config;
+
+            public AuthenticationApiController(IConfiguration config)
+            {
+                _config = config;
+            }
 
         [AllowAnonymous]
         [HttpGet]
@@ -26,7 +32,10 @@ namespace Server
         public Task<IdSession>? getIDToken()
         {
             //private readonly IIdentificationV2Service client;
-            var client = new IdentificationV2Service("tfa0dc79b7a8f4949baf7ef3000b23095", "lMMC8ESqzcHrPkxG2bYEb5Y1Zb793jI8y25p8AZSZeTYG4hjMLy5uqVdO0FJRT9J", 
+
+            var moviesApiKey = _config["Signicat:ClientId"];
+            var moviesApiKey1 = _config["Signicat:ClientSecret"];
+            var client = new IdentificationV2Service(moviesApiKey, moviesApiKey1, 
             new List<OAuthScope>()
             {
                 OAuthScope.Identify
