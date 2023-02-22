@@ -10,6 +10,7 @@ import './index.css';
 import Login from "./pages/Login";
 import TimeLine from "./pages/TimeLine";
 import SignUp from "./pages/SignUp";
+import MitID from './pages/MitID';
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/" element={<TimeLine />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/MitID" element={<MitID />} />
       </Routes>
     </>
   );
