@@ -1,5 +1,4 @@
-using Core;
-using Entities;
+using Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +6,10 @@ builder.Services.AddDbContext<LiquidDemocracyContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("liquiddemocracy")));
 builder.Services.AddScoped<ILiquidDemocracyContext, LiquidDemocracyContext>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICandidateRepository, CandidateRepository>();
+builder.Services.AddScoped<IElectionRepository, ElectionRepository>();
+builder.Services.AddScoped<IVotingsRepository, VotingsRepository>();
+
 
 // Add services to the container.
 
@@ -16,6 +19,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+//For Containerizing
 /* using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<LiquidDemocracyContext>();

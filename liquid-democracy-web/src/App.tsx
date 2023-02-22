@@ -4,19 +4,21 @@ import './App.css';
 import { fetchStartMitIDSession } from './fetch';
 import { time } from 'console';
 
-function App() {
+import ReactDOM from "react-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import './index.css';
+import Login from "./pages/Login";
+import TimeLine from "./pages/TimeLine";
+import SignUp from "./pages/SignUp";
+
+export default function App() {
   return (
-    <section>
-    <h1> Welcome to the authentication process </h1>
-        <button onClick={() => {
-          var fetchData = fetchStartMitIDSession();
-          console.log(fetchData);
-        }
-          }>
-          Login with MitId
-        </button>
-  </section>
+    <>
+      <Routes>
+        <Route path="/" element={<TimeLine />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+      </Routes>
+    </>
   );
 }
-
-export default App;

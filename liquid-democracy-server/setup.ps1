@@ -12,7 +12,7 @@ cd ./API/
 dotnet user-secrets init
 dotnet user-secrets set "ConnectionStrings:liquiddemocracy" "$connectionString"
 Set-Clipboard -Value  $connectionString
-cd ../Entities/
+cd ../Repository/
 rm -r ./Migrations/
 dotnet ef migrations add InitialMigration -s ../API/
 dotnet ef database update -s ../API/
