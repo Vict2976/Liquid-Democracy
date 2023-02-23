@@ -14,11 +14,11 @@ public class ElectionController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpPost("{name}")]
+    [HttpPost]
     [ProducesResponseType(typeof(Election), 201)]
-    public async Task<ActionResult<Election?>> Post(string name, int userId)
+    public async Task<ActionResult<Election?>> Post([FromBody] CreateElectionDTO createElectionDTO)
     {
-        var response = await _repository.CreateAsync(name, userId);
+        var response = await _repository.CreateAsync(createElectionDTO.Name, createElectionDTO.UserId, null);
         return response;
     }
 

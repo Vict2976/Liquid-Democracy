@@ -11,11 +11,20 @@ public class ElectionRepository : IElectionRepository
         _context = context;
     }
 
-    public async Task<Election?> CreateAsync(string name, int userId){
+    public async Task<Election?> CreateAsync(string name, int userId, List<Candidate> candidates){
+
+        //var userExist = _context.Users.Any(u=> u.UserId == userId);
+        /*if(userExist) {
+            var user = _context.Users.Where(u => u.UserId == userId).Select(u => u).First();
+        */
         var election = new Election
             {
                 Name = name,
-                UserId = userId
+                AmountOfVotes = 0,
+                UserId = userId, 
+                //User = user,
+                Candidates = null,
+                Votings = null
             };
         
         _context.Elections.Add(election);
@@ -23,6 +32,7 @@ public class ElectionRepository : IElectionRepository
         await _context.SaveChangesAsync();
 
         return election;
+
 
     }
 

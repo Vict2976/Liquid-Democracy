@@ -18,6 +18,8 @@
 
   <ItemGroup>
     <ProjectReference Include="../Repository/Repository.csproj" />
+    <ProjectReference Include="../Core/Core.csproj" />
+    <ProjectReference Include="../Security/Security.csproj" />
   </ItemGroup>
 
   <ItemGroup>
