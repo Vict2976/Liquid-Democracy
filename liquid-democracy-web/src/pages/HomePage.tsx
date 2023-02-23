@@ -1,14 +1,20 @@
 import { useContext, useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
 import { Election } from '../builder/Interface';
 import { AppService } from '../services/app.service';
-import { useNavigate, createSearchParams, Link} from "react-router-dom";
-
+import { Link} from "react-router-dom";
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import '../styling/HomePage.css';
+import TopBar from '../Components/TopBar';
 
 function HomePage() {
   const [elections, setElections] = useState<Election[]>();
+
   const appService = new AppService();
+
   useEffect(() => {
       appService.getAllElections().then((response) => {
       //console.log(response);
@@ -20,24 +26,32 @@ function HomePage() {
   return (
     <div className="App">
       <header className="App-header">
-        {elections.map((ele) => (
-          <view key={ele.electionId}>
-            <view>
-            <Card style={{ width: '18rem' }}>
-              <Card.Img variant="top" src="holder.js/100px180" />
-              <Card.Body>
-                <Card.Title>{ele.name}</Card.Title>
-                <Card.Text>
-                  Votes: {ele.amountOfVotes}
-                </Card.Text>
-                <Link to = "/Election" state={ele.electionId} onClick={()=> console.log(elections)}>
-                  See Election
+      <TopBar/>
+            <Grid container spacing={2} className='grid-box'>
+          {elections.map((ele) => (
+          <Grid item xs={12} sm={6} md={3} key={ele.electionId}>
+              <Card className='single-card'>
+                <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                    {ele.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                  hejsa det her er en lang beskrivelse
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Link to = "/Election" state={ele.electionId} onClick={()=> console.log(elections)}>
+                      See Election
                   </Link>
-              </Card.Body>
-            </Card>
-            </view>
-          </view>))}
-    </header>
+                  <Typography >
+                    Dato: 02/03/2023   
+                  </Typography>
+                </CardActions>
+              </Card>    
+            </Grid>
+              ))}
+          </Grid>
+      </header>
     </div>
   );
   }else {
@@ -49,4 +63,4 @@ function HomePage() {
   }
 }
 
-export default HomePage
+export default HomePage           
