@@ -11,10 +11,12 @@ public class ElectionRepository : IElectionRepository
         _context = context;
     }
 
-    public async Task<Election?> CreateAsync(string name, int userId){
+    public async Task<Election?> CreateAsync(string name, int userId, List<Candidate> candidates){
+        
         var election = new Election
             {
                 Name = name,
+                Candidates = null,
             };
         
         _context.Elections.Add(election);
@@ -22,6 +24,7 @@ public class ElectionRepository : IElectionRepository
         await _context.SaveChangesAsync();
 
         return election;
+
 
     }
 
