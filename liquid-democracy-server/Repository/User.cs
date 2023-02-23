@@ -9,6 +9,7 @@ public class User
     public string? UserName { get; set; }
     public string? Email { get; set; }
     public string? Password { get; set; }
-    public List<Votings>? Votings { get; set; }
-    public List<Election>? Elections { get; set; }
+
+    public ICollection<Vote> Votes { get; set; }
+    public ICollection<VoteUsedOn> DelegatedVotes { get; set; }
 }

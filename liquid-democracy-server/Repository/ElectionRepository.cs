@@ -15,7 +15,6 @@ public class ElectionRepository : IElectionRepository
         var election = new Election
             {
                 Name = name,
-                UserId = userId
             };
         
         _context.Elections.Add(election);
@@ -35,7 +34,7 @@ public class ElectionRepository : IElectionRepository
 
 
     public async Task<Election?> GetElectionByIDAsync(int electionId){
-        var election = await _context.Elections.Where(c => c.ElectionId == electionId).Select(c=> c).FirstAsync();
+        var election = await _context.Elections.Where(c => c.ElectionID == electionId).Select(c=> c).FirstAsync();
 
         return election;
     }

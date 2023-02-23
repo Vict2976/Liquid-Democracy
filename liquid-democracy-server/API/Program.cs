@@ -12,7 +12,7 @@ builder.Services.AddScoped<ILiquidDemocracyContext, LiquidDemocracyContext>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICandidateRepository, CandidateRepository>();
 builder.Services.AddScoped<IElectionRepository, ElectionRepository>();
-builder.Services.AddScoped<IVotingsRepository, VotingsRepository>();
+builder.Services.AddScoped<IVoteRepository, VoteRepository>();
 // Add services to the container.
 
 builder.Services.AddControllers();

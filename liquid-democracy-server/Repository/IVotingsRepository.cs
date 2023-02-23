@@ -1,8 +1,8 @@
 namespace Repository;
 
-public interface IVotingsRepository
+public interface IVoteRepository
 {
-    public Task<Votings?> CreateAsync(int userId, int elecitonId, int candidateId);
-    public Task<IEnumerable<Votings?>> ReadAllAsync();
+    public Task<Vote?> CreateAsync(int userId, int elecitonId, int candidateId);
+    public Task<IEnumerable<Vote?>> ReadAllAsync();
 
 }

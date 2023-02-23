@@ -32,9 +32,7 @@ public class UserRepository : IUserRepository
             UserName = username,
             Email = email,
             Password = password,
-            Votings = null,
-            Elections = null
-
+            Votes = null,
         };
 
         _context.Users.Add(user);

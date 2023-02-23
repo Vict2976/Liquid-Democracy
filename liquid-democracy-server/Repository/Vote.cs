@@ -1,14 +1,16 @@
-namespace Repository;
-
 using System.ComponentModel.DataAnnotations;
 
-public class Candidate
+namespace Repository;
+
+public class Vote
 {
     [Key]
-    public int CandidateID { get; set; }
-    public string Name { get; set; }
+    public int VoteId { get; set; }
+    public int BelongsToId { get; set; }
     public int ElectionId { get; set; }
 
+    public User User { get; set; }
     public Election Election { get; set; }
     public ICollection<VoteUsedOn> DelegatedVotes { get; set; }
+
 }

@@ -5,11 +5,10 @@ using System.ComponentModel.DataAnnotations;
 public class Election
 {
     [Key]
-    public int ElectionId { get; set; }
-    public string? Name { get; set; }
-    public int AmountOfVotes { get; set; }
-    public int UserId { get; set; }
-    public User User { get; set; }
-    public List<Candidate>? Candidates { get; set; }
-    public List<Votings> Votings{get; set;}
+    public int ElectionID { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public ICollection<Candidate> Candidates { get; set; }
+    public ICollection<Vote> Votes { get; set; }
 }
