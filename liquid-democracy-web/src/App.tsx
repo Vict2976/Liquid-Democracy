@@ -12,6 +12,7 @@ import SignUp from "./pages/SignUp";
 import MitID from './pages/MitID';
 import HomePage from './pages/HomePage';
 import Register from './pages/Register';
+import CreateElection from './pages/CreateElection';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/MitID" element={<MitID />} />
+        <Route path="/CreateElection" element={<CreateElection />} />
       </Routes>
     </>
   );
