@@ -11,11 +11,13 @@ public class ElectionRepository : IElectionRepository
         _context = context;
     }
 
-    public async Task<Election?> CreateAsync(string name, int userId, List<Candidate> candidates){
-        
+    public async Task<Election?> CreateAsync(string name, string description, DateTime createdDate, List<Candidate> candidates){
+
         var election = new Election
             {
                 Name = name,
+                Description = description,
+                CreatedDate = createdDate,
                 Candidates = null,
             };
         
@@ -24,8 +26,6 @@ public class ElectionRepository : IElectionRepository
         await _context.SaveChangesAsync();
 
         return election;
-
-
     }
 
     public async Task<IEnumerable<Election>?> ReadAllAsync(){
@@ -37,7 +37,7 @@ public class ElectionRepository : IElectionRepository
 
 
     public async Task<Election?> GetElectionByIDAsync(int electionId){
-        var election = await _context.Elections.Where(c => c.ElectionID == electionId).Select(c=> c).FirstAsync();
+        var election = await _context.Elections.Where(c => c.ElectionId == electionId).Select(c=> c).FirstAsync();
 
         return election;
     }

@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { GetElectionFromId } from "../services/election.service";
+import { ElectionService } from "../services/election.service";
 import { Election } from "../builder/Interface";
 
 //Får Id med videre og så kalde en fetch på /GetElectionByID
 
 export default function ElectionFunc() {
-  const [election, setElection] = useState<Election>();
 
+  const electionService = new ElectionService(); 
+
+  const [election, setElection] = useState<Election>();
   let { state } = useLocation();
   let id = Number(state);
   /*     const singleElection = () => {
@@ -17,7 +19,8 @@ export default function ElectionFunc() {
     } */
 
   useEffect(() => {
-    GetElectionFromId(id).then((messages) => {
+    electionService.GetElectionFromId(id).then((messages) => {
+      console.log("HHHER:::" + messages);
       setElection(messages);
     });
   }, []);
@@ -26,8 +29,9 @@ export default function ElectionFunc() {
     <view>
       <ul>
         <li>{election?.name}</li>
+        <li>{election?.description}</li>
+        <li>{election?.createdDate}</li>
         <li>{election?.electionId}</li>
-        <li>{election?.amountOfVotes}</li>
         <li>{election?.candidates}</li>
         <li>{election?.votings}</li>
       </ul>

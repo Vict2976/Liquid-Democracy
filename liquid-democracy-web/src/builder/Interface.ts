@@ -10,8 +10,8 @@ export interface Election
 {
     electionId: number,
     name: string,
-    amountOfVotes: number,
-    userId: number,
+    description: string,
+    createdDate: string,
     candidates: number[],
     votings: number[]
 } 

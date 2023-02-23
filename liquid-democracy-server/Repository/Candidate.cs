@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 public class Candidate
 {
     [Key]
-    public int CandidateID { get; set; }
+    public int CandidateId { get; set; }
     public string Name { get; set; }
     public int ElectionId { get; set; }
 

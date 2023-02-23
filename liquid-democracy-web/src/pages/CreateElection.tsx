@@ -3,8 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { Election } from '../builder/Interface';
-import { AppService } from '../services/app.service';
-import { CreateElectionService } from '../services/createElection.service';
+import { ElectionService } from '../services/election.service';
 
 
 export function getCurrentDate(separator=''){
@@ -20,25 +19,23 @@ export function getCurrentDate(separator=''){
 function CreateElection() {
     const [elections, setElection] = useState<Election[]>();
    
-    const createElectionService = new CreateElectionService(); 
+    const electionService = new ElectionService(); 
 
     const [name, setName] = useState('');
     const [userId, setUserId] = useState('');
-
-
     const [desciption, setDescription] = useState('');
+
+
     //const [date, setDate] = useState('');
     //const [possibleAnswer, setpossibleAnswer] = useState('');
 
-
-
-    const createElection = (e: React.FormEvent) => {
-        let promise = createElectionService.CreateElection(name, userId);
+/*     const createElection = (e: React.FormEvent) => {
+        let promise = createElectionService.CreateElection(name, desciption, createdDate);
         promise.catch( () => alert("An error occured, all input fields must be filled"))
         promise.then((response) => {
             setUserId(response);
             })
-        };
+        }; */
 
     /*
     Overskrift
@@ -79,12 +76,10 @@ function CreateElection() {
                     </form>
                 </div>
 
-
-              
                 </form>
 
                 <Button 
-                    onClick={()=> createElectionService.CreateElection(name, 1)}>
+                    onClick={()=> electionService.CreateElection(name, desciption, new Date())}>
                     Press to confirm
                 </Button>
             </div>

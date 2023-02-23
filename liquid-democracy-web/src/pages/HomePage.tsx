@@ -36,7 +36,7 @@ function HomePage() {
                     {ele.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                  hejsa det her er en lang beskrivelse
+                    {ele.description}
                   </Typography>
                 </CardContent>
                 <CardActions>
@@ -44,7 +44,7 @@ function HomePage() {
                       See Election
                   </Link>
                   <Typography >
-                    Dato: 02/03/2023   
+                    {ele.createdDate}
                   </Typography>
                 </CardActions>
               </Card>    
