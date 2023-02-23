@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import MitID from './pages/MitID';
 import HomePage from './pages/HomePage';
+import Election from './pages/Election';
 import Register from './pages/Register';
 import CreateElection from './pages/CreateElection';
 
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/MitID" element={<MitID />} />
         <Route path="/CreateElection" element={<CreateElection />} />
+        <Route path="/Election" element={<Election/>} />
       </Routes>
     </>
   );

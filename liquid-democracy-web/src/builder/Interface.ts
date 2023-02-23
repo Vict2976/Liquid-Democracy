@@ -8,7 +8,7 @@ export interface User
 
 export interface Election
 {
-    electionid: number,
+    electionId: number,
     name: string,
     amountOfVotes: number,
     userId: number,
