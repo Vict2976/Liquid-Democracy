@@ -6,6 +6,54 @@ import { Election } from '../builder/Interface';
 import { ElectionService } from '../services/election.service';
 
 
+
+interface CheckboxProps {
+  label: string;
+}
+
+interface CheckboxListProps {
+  checkboxes: CheckboxProps[];
+  onAddCheckbox: () => void;
+  onRemoveCheckbox: (index: number) => void;
+  onUpdateCheckboxLabel: (index: number, label: string) => void;
+}
+
+const CheckboxList: React.FC<CheckboxListProps> = ({
+  checkboxes,
+  onAddCheckbox,
+  onRemoveCheckbox,
+  onUpdateCheckboxLabel,
+}) => {
+  const handleAddCheckbox = () => {
+    onAddCheckbox();
+  };
+
+  const handleRemoveCheckbox = (index: number) => {
+    onRemoveCheckbox(index);
+  };
+
+  const handleUpdateCheckboxLabel = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
+    onUpdateCheckboxLabel(index, event.target.value);
+  };
+
+  return (
+    <div>
+      {checkboxes.map((checkbox, index) => (
+        <div key={index}>
+          <input
+            type="text"
+            placeholder={`Checkbox ${index + 1}`}
+            value={checkbox.label}
+            onChange={(event) => handleUpdateCheckboxLabel(index, event)}
+          />
+          <button onClick={() => handleRemoveCheckbox(index)}>Remove</button>
+        </div>
+      ))}
+      <button onClick={handleAddCheckbox}>Add Checkbox</button>
+    </div>
+  );
+};
+
 export function getCurrentDate(separator=''){
     let newDate = new Date()
     let date = newDate.getDate();
@@ -17,6 +65,28 @@ export function getCurrentDate(separator=''){
 
 
 function CreateElection() {
+  const [checkboxes, setCheckboxes] = useState<CheckboxProps[]>([
+    { label: '' },
+    { label: '' },
+  ]);
+
+  const handleAddCheckbox = () => {
+    setCheckboxes([...checkboxes, { label: '' }]);
+  };
+
+  const handleRemoveCheckbox = (index: number) => {
+    const newCheckboxes = [...checkboxes];
+    newCheckboxes.splice(index, 1);
+    setCheckboxes(newCheckboxes);
+  };
+
+  const handleUpdateCheckboxLabel = (index: number, label: string) => {
+    const newCheckboxes = [...checkboxes];
+    newCheckboxes[index] = { label };
+    setCheckboxes(newCheckboxes);
+  };
+
+
     const [elections, setElection] = useState<Election[]>();
    
     const electionService = new ElectionService(); 
@@ -24,6 +94,8 @@ function CreateElection() {
     const [name, setName] = useState('');
     const [userId, setUserId] = useState('');
     const [desciption, setDescription] = useState('');
+
+    const [candidates, setCandidates] = useState('');
 
 
     //const [date, setDate] = useState('');
@@ -65,67 +137,31 @@ function CreateElection() {
                         placeholder="Write a description"
                         onChange={e =>setDescription(e.target.value)} />
                 </form>
-                <form>
-                <div className='multAnswer'>
-                    <form>
 
-                        <input 
-                            type={"text"}
-                            placeholder="Write answer"
-                            onChange={e => setName(e.target.value)} />
-                    </form>
+                <div>
+                <CheckboxList
+                  checkboxes={checkboxes}
+                  onAddCheckbox={handleAddCheckbox}
+                  onRemoveCheckbox={handleRemoveCheckbox}
+                  onUpdateCheckboxLabel={handleUpdateCheckboxLabel}/>
                 </div>
-
-                </form>
-
-                <Button 
-                    onClick={()=> electionService.CreateElection(name, desciption, new Date())}>
-                    Press to confirm
-                </Button>
+                <button 
+                    onClick={()=>{ 
+                      electionService.CreateElection(name, desciption, new Date())}}
+                    //onc ={()=> {window.location.replace("/")}}
+                    >
+                  Please confirm your choices
+                </button>
+                <button 
+                    onClick={()=>{ 
+                      window.location.replace("/")}}
+                    >
+                  Go back to the other elections
+                </button>
             </div>
         </div>
     );
 }
-
-/*type CheckProps = {
-    label: string;
-    value: boolean;
-    onChange: any;
-  };
-
-const Checkbox: React.FunctionComponent<CheckProps> = ({label, value, onChange }) => {
-    return (
-      <label>
-        <input type="checkbox" checked={value} onChange={onChange} />
-        {label}
-      </label>
-
-
-    );
-  };*/
-
-  interface InputProps {
-    placeholder: string;
-  }
-  
-  const Input: React.FC<InputProps> = ({ placeholder }) => {
-    return <input placeholder={placeholder} />;
-  };
-  
-const Form: React.FC = () => {
-    const [inputList, setInputList] = useState<JSX.Element[]>([]);
-  
-    const onAddBtnClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-      setInputList(inputList.concat(<Input key={inputList.length} placeholder="Your input here" />));
-    };
-  
-    return (
-      <div>
-        <button onClick={onAddBtnClick}>Add input</button>
-        {inputList}
-      </div>
-    );
-  };
 
 
 
