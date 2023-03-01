@@ -1,7 +1,14 @@
+using System.Text.Json.Serialization;
 using Repository;
 using Security;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers().AddJsonOptions(options => 
+{ 
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.JsonSerializerOptions.WriteIndented = true;
+});
 
 builder.Services.Configure<HashSettings>(builder.Configuration.GetSection(nameof(HashSettings)));
 builder.Services.AddScoped<IHasher, Hasher>();

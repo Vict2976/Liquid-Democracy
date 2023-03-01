@@ -59,4 +59,12 @@ public class UserController : ControllerBase
 
         return response.ToActionResult();
     }
+
+    [HttpGet("{electionId}")]
+    [AllowAnonymous]
+    public Task<IEnumerable<User>> GetAllDelegatesByElection(int electionId)
+    {
+        var response = _repository.GetAllDelegetasByElection(electionId);
+        return response;
+    }
 }
