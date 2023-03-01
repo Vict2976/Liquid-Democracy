@@ -16,7 +16,7 @@ public class VoteController : ControllerBase
     [AllowAnonymous]
     [HttpPost]
     [ProducesResponseType(typeof(Vote), 201)]
-    public async Task<ActionResult<Vote?>> Post(int userId, int elecitonId, int candidateId)
+    public async Task<ActionResult<Vote?>> Post(int userId, int elecitonId)
     {
         var checkForVote = _repository.checkForExistingVote(userId, elecitonId);
 
@@ -25,7 +25,7 @@ public class VoteController : ControllerBase
             return StatusCode(StatusCodes.Status403Forbidden);
         }
 
-        var response = await _repository.CreateAsync(userId, elecitonId, candidateId);
+        var response = await _repository.CreateAsync(userId, elecitonId);
         return response;
     }
 

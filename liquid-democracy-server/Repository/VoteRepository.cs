@@ -11,7 +11,7 @@ public class VoteRepository : IVoteRepository
         _context = context;
     }
 
-    public async Task<Vote?> CreateAsync(int userId, int elecitonId, int candidateId){
+    public async Task<Vote?> CreateAsync(int userId, int elecitonId){
         var vote = new Vote
             {
                 BelongsToId = userId,
