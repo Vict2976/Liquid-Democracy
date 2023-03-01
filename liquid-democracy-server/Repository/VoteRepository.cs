@@ -30,4 +30,14 @@ public class VoteRepository : IVoteRepository
             .ToListAsync();
         return votes;
     }
+
+    public async Task<Vote?> checkForExistingVote(int belongsToId, int elecitonId)
+    {
+        try{ 
+             var vote = await _context.Votes.Where(c=> c.BelongsToId==belongsToId && c.ElectionId == elecitonId).FirstAsync();
+             return vote;
+        }catch{
+            return null;
+        }
+    }
 }
