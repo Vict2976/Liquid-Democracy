@@ -24,8 +24,15 @@ public class CandidateController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<IEnumerable<Candidate?>> Get(){
+    public async Task<IEnumerable<Candidate?>> GetAllCandidates(){
         var candidates = await _repository.ReadAllAsync();
+        return candidates;
+    }
+
+    [AllowAnonymous]
+    [HttpGet("{electionId}")]
+    public async Task<IEnumerable<Candidate?>> GetCandidatesForElection(int electionId){
+        var candidates = await _repository.ReadAllByElectionId(electionId);
         return candidates;
     }
 }

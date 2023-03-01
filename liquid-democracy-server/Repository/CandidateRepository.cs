@@ -30,4 +30,11 @@ public class CandidateRepository : ICandidateRepository
             .ToListAsync();
         return candidates;
     }
+
+    public async Task<IEnumerable<Candidate>?> ReadAllByElectionId(int electionId)
+    {
+        var candidates = await _context.Candidates.Where(c => c.ElectionId == electionId).ToListAsync();
+        return candidates;
+
+    }
 }

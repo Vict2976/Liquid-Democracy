@@ -70,4 +70,24 @@ public class UserRepository : IUserRepository
             Model = user
         };    
     }
+
+    public async Task<IEnumerable<User>> GetAllDelegetasByElection(int electionId)
+    {
+        var votesInElection = await _context.Votes.Where(v => v.ElectionId == electionId).ToListAsync();
+        
+        var votesUsedOnList = new List<VoteUsedOn>();
+
+        foreach(var vote in votesInElection){
+            var votesUsedOn = await _context.VoteUsedOns.Where(VUO => VUO.VoteId == vote.VoteId && VUO.DelegateId != null).FirstOrDefaultAsync();
+            votesUsedOnList.Add(votesUsedOn);
+        }
+
+        var delegateList = new List<User>();
+        foreach(var voteUsedOn in votesUsedOnList){
+            var delegatedUser = await _context.Users.Where(u => u.UserId == voteUsedOn.DelegateId).FirstOrDefaultAsync();
+            delegateList.Add(delegatedUser);
+        }
+
+        return delegateList;
+    }
 }
