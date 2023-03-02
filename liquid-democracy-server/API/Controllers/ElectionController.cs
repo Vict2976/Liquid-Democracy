@@ -1,5 +1,6 @@
 namespace Server.Controllers;
 
+using Core;
 using Repository;
 
 [ApiController]
@@ -34,6 +35,13 @@ public class ElectionController : ControllerBase
     public async Task<Election?> GetElectionByID(int electionId){
         var election = await _repository.GetElectionByIDAsync(electionId);
         return election;
+    }
+
+    [AllowAnonymous]
+    [HttpPut ("{electionId}")]
+    public async Task<Response> CloseElection(int electionId){
+        var response = await _repository.CloseElection(electionId);
+        return response;
     }
 
 }
