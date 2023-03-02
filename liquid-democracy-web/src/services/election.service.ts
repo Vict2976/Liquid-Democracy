@@ -43,4 +43,39 @@ export class ElectionService {
         return Promise.reject();
     }
   }
+
+
+  public async GetAllCandidatesFromElecttion(electionId: number){
+    const config: AxiosRequestConfig = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: 'https://localhost:7236/Candidate/'+ electionId,
+      headers: { }
+    };
+
+  try {
+      const data = await axios(config).then((response) => response.data);
+      return data;
+  } catch (error) {
+      console.log(error);
+      return Promise.reject();
+  }
+  }
+
+  public async GetAllDelegatesFromElecttion(electionId: number){
+    const config: AxiosRequestConfig = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: 'https://localhost:7236/User/'+ electionId,
+      headers: { }
+    };
+
+  try {
+      const data = await axios(config).then((response) => response.data);
+      return data;
+  } catch (error) {
+      console.log(error);
+      return Promise.reject();
+  }
+  }
 }

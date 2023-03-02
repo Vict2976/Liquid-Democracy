@@ -1,9 +1,9 @@
 export interface User
 {
     userId : number,
-    name : string,
-    votings: number[],
-    elections: number[]
+    userName : string,
+    //votings: number[],
+    //elections: number[]
 }
 
 export interface Election
