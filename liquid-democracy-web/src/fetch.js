@@ -1,5 +1,5 @@
 
- export async function fetchStartMitIDSession(){
+ export async function fetchStartMitIDSession(url){
     var myHeaders = new Headers();
     var requestOptions = {
         method: 'GET',
@@ -8,14 +8,14 @@
         //redirect: 'follow'
         };
 
-    var response = await fetch("https://localhost:7236/authentication-session/getIDToken", requestOptions)
+    var response = await fetch("https://localhost:7236/authentication-session/getIDToken/", requestOptions)
 
     if (response.ok) { // if HTTP-status is 200-299
         // get the response body (the method explained below)
         let json = await response.json();
         let url = json.url;
         //console.log(url);
-        window.location.href=url;
+        window.open(url);
       } else {
         alert("HTTP-Error: " + response.status);
       }

@@ -15,6 +15,7 @@ import Election from './pages/Election';
 import Register from './pages/Register';
 import Admin from './pages/Admin';
 import CreateElection from './pages/CreateElection';
+import VoteAfterMitId from './pages/VoteAfterMitId';
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/MitID" element={<MitID />} />
         <Route path="/CreateElection" element={<CreateElection />} />
         <Route path="/Election" element={<Election/>} />
+        <Route path="/VoteAfterMitId" element={<VoteAfterMitId/>} />
         <Route path="/Admin" element={<Admin/>} />
       </Routes>
     </>
