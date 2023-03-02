@@ -20,6 +20,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICandidateRepository, CandidateRepository>();
 builder.Services.AddScoped<IElectionRepository, ElectionRepository>();
 builder.Services.AddScoped<IVoteRepository, VoteRepository>();
+builder.Services.AddScoped<IVoteUsedOnRepository, VoteUsedOnRepository>();
 // Add services to the container.
 
 builder.Services.AddControllers();

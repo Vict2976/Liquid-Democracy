@@ -11,7 +11,7 @@ public class VoteRepository : IVoteRepository
         _context = context;
     }
 
-    public async Task<Vote?> CreateAsync(int userId, int elecitonId, int candidateId){
+    public async Task<Vote?> CreateAsync(int userId, int elecitonId){
         var vote = new Vote
             {
                 BelongsToId = userId,
@@ -29,5 +29,15 @@ public class VoteRepository : IVoteRepository
         var votes = await _context.Votes
             .ToListAsync();
         return votes;
+    }
+
+    public async Task<Vote?> checkForExistingVote(int belongsToId, int elecitonId)
+    {
+        try{ 
+             var vote = await _context.Votes.Where(c=> c.BelongsToId==belongsToId && c.ElectionId == elecitonId).FirstAsync();
+             return vote;
+        }catch{
+            return null;
+        }
     }
 }
