@@ -21,7 +21,7 @@ public class ElectionRepository : IElectionRepository
                 Name = name,
                 Description = description,
                 CreatedDate = createdDate,
-                IsEnded = false,
+                IsEnded = false
             };
         _context.Elections.Add(election);
 
