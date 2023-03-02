@@ -15,7 +15,8 @@ public class CandidateRepository : ICandidateRepository
         var candidate = new Candidate
             {
                 Name = name,
-                ElectionId = electionId
+                ElectionId = electionId,
+                RecievedVotes = 0
             };
         
         _context.Candidates.Add(candidate);

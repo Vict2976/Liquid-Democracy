@@ -6,26 +6,33 @@ namespace Repository;
 public class ElectionRepository : IElectionRepository
 {
     ILiquidDemocracyContext _context;
+    ICandidateRepository _candidateRepository;
 
-    public ElectionRepository(ILiquidDemocracyContext context)
+    public ElectionRepository(ILiquidDemocracyContext context, ICandidateRepository candidateRepository)
     {
         _context = context;
+        _candidateRepository = candidateRepository;
     }
 
-    public async Task<Election?> CreateAsync(string name, string description, DateTime createdDate, List<Candidate> candidates){
+    public async Task<Election?> CreateAsync(string name, string description, DateTime createdDate, ICollection<string> candidates){
 
         var election = new Election
             {
                 Name = name,
                 Description = description,
                 CreatedDate = createdDate,
-                Candidates = null,
-                IsEnded = false
+                IsEnded = false,
+                Candidates = candidates
             };
-        
         _context.Elections.Add(election);
 
         await _context.SaveChangesAsync();
+
+        foreach (var candidate in candidates){
+            await _candidateRepository.CreateAsync(candidate, election.ElectionId);
+        }
+        
+
 
         return election;
     }

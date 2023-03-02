@@ -19,7 +19,7 @@ public class ElectionController : ControllerBase
     [ProducesResponseType(typeof(Election), 201)]
     public async Task<ActionResult<Election?>> Post([FromBody] CreateElectionDTO createElectionDTO)
     {
-        var response = await _repository.CreateAsync(createElectionDTO.Name, createElectionDTO.Description, createElectionDTO.CreatedDate, null);
+        var response = await _repository.CreateAsync(createElectionDTO.Name, createElectionDTO.Description, createElectionDTO.CreatedDate, createElectionDTO.Candidates);
         return response;
     }
 
