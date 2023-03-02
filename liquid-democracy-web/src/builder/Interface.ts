@@ -24,6 +24,11 @@ export interface Candidate
     electionId: number,
 } 
 
+export interface CreateCandidate
+{
+    name: string
+} 
+
 export interface Votings
 {
     voteId: number,

@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import { CreateCandidate } from '../builder/Interface';
 
 
 export class ElectionService {
@@ -20,12 +21,14 @@ export class ElectionService {
     }
   }
 
-  public async CreateElection(name: string, description: string, CreatedDate : Date) : Promise<any> {
+  public async CreateElection(name: string, description: string, CreatedDate : Date, candidates: string[]) : Promise<any> {
     var data = JSON.stringify({
       "Name": name,
       "Description": description,
-      "CreatedDate": CreatedDate
+      "CreatedDate": CreatedDate,
+      "Candidates": candidates
     });  
+    
     const config: AxiosRequestConfig = {
       method: 'post',
     maxBodyLength: Infinity,
@@ -44,3 +47,4 @@ export class ElectionService {
     }
   }
 }
+
