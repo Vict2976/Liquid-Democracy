@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { ElectionService } from "../services/election.service";
 import { Election, Candidate, User } from "../builder/Interface";
 import {Form, Button, Alert} from 'react-bootstrap';
+import { fetchStartMitIDSession } from "../fetch";
 
 
 
@@ -59,7 +60,7 @@ export default function ElectionFunc() {
         {candidates.map((can) => (
           <ul>
             <li>{can.name}</li>
-            <button> Vote For: {can.name}</button>
+            <button onClick={()=> fetchStartMitIDSession()}> Vote For: {can.name}</button>
           </ul>
         ))}
         </div>
@@ -70,7 +71,7 @@ export default function ElectionFunc() {
         {delegates.map((del) => (
           <ul>
             <li>{del.userName}</li>
-            <button>Delegate Vote To: {del.userName}</button>
+            <button onClick={()=> fetchStartMitIDSession()}>Delegate Vote To: {del.userName}</button>
           </ul>
 
         ))}
