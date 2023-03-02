@@ -75,7 +75,16 @@ public class UserRepository : IUserRepository
     {
         var votesInElection = await _context.Votes.Where(v => v.ElectionId == electionId).ToListAsync();
 
+        var listOfDelegates = new List<User>();
+
+        foreach(var vote in votesInElection){
+            var user = await _context.Users.Where(u => u.UserId == vote.BelongsToId).FirstOrDefaultAsync();
+            listOfDelegates.Add(user);
+        }
+
+/*         
         var votesUsedOnList = new List<VoteUsedOn>();
+
 
         foreach(var vote in votesInElection)
         {
@@ -92,8 +101,8 @@ public class UserRepository : IUserRepository
             if(delegatedUser != null){
                 delegateList.Add(delegatedUser);
             }
-        }
+        } */
 
-        return delegateList;
+        return listOfDelegates;
     }
 }

@@ -15,10 +15,21 @@ public class VoteUsedOnController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost]
+    [Route("/ForCandidate")]
     [ProducesResponseType(typeof(VoteUsedOn), 201)]
-    public async Task<ActionResult<VoteUsedOn?>> Post(int voteId, int? candidateId, int? delegateId)
+    public async Task<ActionResult<VoteUsedOn?>> CreateVoteUsedOnForCandidate(int voteId, int? candidateId)
     {
-        var response = await _repository.CreateVoteUsedOn(voteId, candidateId, delegateId);
+        var response = await _repository.CreateVoteUsedOnForCandidate(voteId, candidateId);
+        return response;
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    [Route("/ForDelegate")]
+    [ProducesResponseType(typeof(VoteUsedOn), 201)]
+    public async Task<ActionResult<VoteUsedOn?>> CreateVoteUsedOnForDelegate(int voteId, int? delegateId, int electionId)
+    {
+        var response = await _repository.CreateVoteUsedOnForDelegate(voteId, delegateId, electionId);
         return response;
     }
 
