@@ -25,6 +25,11 @@ export default function ElectionFunc() {
     });
   }, []);
 
+  if (election?.isEnded){
+    return(
+      <h1>Election has ended</h1>
+    )
+  }else{
   return (
     <view>
       <ul>
@@ -37,4 +42,5 @@ export default function ElectionFunc() {
       </ul>
     </view>
   );
+  }
 }
