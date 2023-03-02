@@ -37,6 +37,9 @@ namespace Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("RecievedVotes")
+                        .HasColumnType("int");
+
                     b.HasKey("CandidateId");
 
                     b.HasIndex("ElectionId");
@@ -115,23 +118,28 @@ namespace Repository.Migrations
 
             modelBuilder.Entity("Repository.VoteUsedOn", b =>
                 {
+                    b.Property<int>("VoteUsedOnId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VoteUsedOnId"), 1L, 1);
+
+                    b.Property<int?>("CandidateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DelegateId")
+                        .HasColumnType("int");
+
                     b.Property<int>("VoteId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CandidateId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DelegateId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VoteUsedOnId")
-                        .HasColumnType("int");
-
-                    b.HasKey("VoteId", "CandidateId", "DelegateId");
+                    b.HasKey("VoteUsedOnId");
 
                     b.HasIndex("CandidateId");
 
                     b.HasIndex("DelegateId");
+
+                    b.HasIndex("VoteId");
 
                     b.ToTable("VoteUsedOns");
                 });
@@ -171,14 +179,11 @@ namespace Repository.Migrations
                     b.HasOne("Repository.Candidate", "Candidate")
                         .WithMany("DelegatedVotes")
                         .HasForeignKey("CandidateId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Repository.User", "Delegate")
                         .WithMany("DelegatedVotes")
-                        .HasForeignKey("DelegateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DelegateId");
 
                     b.HasOne("Repository.Vote", "Vote")
                         .WithMany("DelegatedVotes")
