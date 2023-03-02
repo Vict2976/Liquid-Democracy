@@ -6,54 +6,7 @@ import { Election } from '../builder/Interface';
 import { ElectionService } from '../services/election.service';
 
 
-
-interface CheckboxProps {
-  label: string;
-}
-
-interface CheckboxListProps {
-  checkboxes: CheckboxProps[];
-  onAddCheckbox: () => void;
-  onRemoveCheckbox: (index: number) => void;
-  onUpdateCheckboxLabel: (index: number, label: string) => void;
-}
-
-const CheckboxList: React.FC<CheckboxListProps> = ({
-  checkboxes,
-  onAddCheckbox,
-  onRemoveCheckbox,
-  onUpdateCheckboxLabel,
-}) => {
-  const handleAddCheckbox = () => {
-    onAddCheckbox();
-  };
-
-  const handleRemoveCheckbox = (index: number) => {
-    onRemoveCheckbox(index);
-  };
-
-  const handleUpdateCheckboxLabel = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
-    onUpdateCheckboxLabel(index, event.target.value);
-  };
-
-  return (
-    <div>
-      {checkboxes.map((checkbox, index) => (
-        <div key={index}>
-          <input
-            type="text"
-            placeholder={`Checkbox ${index + 1}`}
-            value={checkbox.label}
-            onChange={(event) => handleUpdateCheckboxLabel(index, event)}
-          />
-          <button onClick={() => handleRemoveCheckbox(index)}>Remove</button>
-        </div>
-      ))}
-      <button onClick={handleAddCheckbox}>Add Checkbox</button>
-    </div>
-  );
-};
-
+//bruges til at finde dato
 export function getCurrentDate(separator=''){
     let newDate = new Date()
     let date = newDate.getDate();
@@ -65,102 +18,76 @@ export function getCurrentDate(separator=''){
 
 
 function CreateElection() {
-  const [checkboxes, setCheckboxes] = useState<CheckboxProps[]>([
-    { label: '' },
-    { label: '' },
-  ]);
+  const [singleCandidate, setSingleCandidates] = useState('');
+  const [candidates, setCandidates] = useState<string[]>([]);
 
-  const handleAddCheckbox = () => {
-    setCheckboxes([...checkboxes, { label: '' }]);
-  };
+  const electionService = new ElectionService(); 
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
 
-  const handleRemoveCheckbox = (index: number) => {
-    const newCheckboxes = [...checkboxes];
-    newCheckboxes.splice(index, 1);
-    setCheckboxes(newCheckboxes);
-  };
+  const handleAddCandidate = () => {
+      setCandidates([...candidates, singleCandidate]);
+      setSingleCandidates('');
+  }
 
-  const handleUpdateCheckboxLabel = (index: number, label: string) => {
-    const newCheckboxes = [...checkboxes];
-    newCheckboxes[index] = { label };
-    setCheckboxes(newCheckboxes);
-  };
+  const handleConfirm = () => {
+      electionService.CreateElection(name, description, new Date(), candidates);
+  }
 
+  return(
+      <div className='CreateElection' style={{display: 'flex',  justifyContent:'center', alignItems:'center', height: '100vh'}}>
+          <div>
+              <h1>
+                  Make your new election:
+              </h1>
+              <form>
+                  <input 
+                      className='name' 
+                      type={"text"}
+                      placeholder="Election name"
+                      onChange={e => setName(e.target.value)} />
+              </form>
+              <label className="dateLabel"> {getCurrentDate()}</label>
+              <form>
+                  <textarea 
+                      className='description' 
+                      rows={4} cols={40}
+                      placeholder="Write a description"
+                      onChange={e => setDescription(e.target.value)} />
+              </form>
+              <form>
+                  <textarea 
+                      className='Add new candidate' 
+                      rows={4} cols={40}
+                      placeholder="Add new candidate"
+                      value={singleCandidate}
+                      onChange={e => setSingleCandidates(e.target.value)} />
+              </form>
+              <button 
+                  onClick={handleAddCandidate}
+                  >
+                Add candidate
+              </button>
 
-    const [elections, setElection] = useState<Election[]>();
-   
-    const electionService = new ElectionService(); 
+              <ul>
+                {candidates.map(candidate => (
+                  <li key={candidate}>{candidate}</li>
+                ))}
+              </ul>
 
-    const [name, setName] = useState('');
-    const [userId, setUserId] = useState('');
-    const [desciption, setDescription] = useState('');
-
-    const [candidates, setCandidates] = useState('');
-
-
-    //const [date, setDate] = useState('');
-    //const [possibleAnswer, setpossibleAnswer] = useState('');
-
-/*     const createElection = (e: React.FormEvent) => {
-        let promise = createElectionService.CreateElection(name, desciption, createdDate);
-        promise.catch( () => alert("An error occured, all input fields must be filled"))
-        promise.then((response) => {
-            setUserId(response);
-            })
-        }; */
-
-    /*
-    Overskrift
-    dato
-    beskrivelse
-    svarmuligheder
-    */
-
-    return(
-        <div className='CreateElection' style={{display: 'flex',  justifyContent:'center', alignItems:'center', height: '100vh'}}>
-            <div>
-                <h1>
-                    Make your new election:
-                </h1>
-                <form>
-                    <input 
-                        className='name' 
-                        type={"text"}
-                        placeholder="Election name"
-                        onChange={e =>setName(e.target.value)} />
-                </form>
-                <label className="dateLabel"> {getCurrentDate()}</label>
-                <form>
-                    <textarea 
-                        className='desciption' 
-                        rows={4} cols={40}
-                        placeholder="Write a description"
-                        onChange={e =>setDescription(e.target.value)} />
-                </form>
-
-                <div>
-                <CheckboxList
-                  checkboxes={checkboxes}
-                  onAddCheckbox={handleAddCheckbox}
-                  onRemoveCheckbox={handleRemoveCheckbox}
-                  onUpdateCheckboxLabel={handleUpdateCheckboxLabel}/>
-                </div>
-                <button 
-                    onClick={()=>{ 
-                      electionService.CreateElection(name, desciption, new Date())}}
-                    //onc ={()=> {window.location.replace("/")}}
-                    >
-                  Please confirm your choices
-                </button>
-                <button 
-                    onClick={()=>{ 
-                      window.location.replace("/")}}
-                    >
-                  Go back to the other elections
-                </button>
-            </div>
-        </div>
-    );
+              <button 
+                  onClick={handleConfirm}
+                  >
+                Please confirm your choices
+              </button>
+              <button 
+                  onClick={() => window.location.replace("/")}
+                  >
+                Go back to the other elections
+              </button>
+          </div>
+      </div>
+  );
 }
 
 

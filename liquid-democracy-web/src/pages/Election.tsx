@@ -29,7 +29,6 @@ export default function ElectionFunc() {
     });
   }, []);
 
-
   useEffect(()=>{
     electionService.GetAllCandidatesFromElecttion( id).then((candidates) => {
       setCandidates(candidates);
@@ -42,8 +41,11 @@ export default function ElectionFunc() {
     });
   },[]);
 
-
-  if(candidates!= undefined && delegates!==undefined){
+  if (election?.isEnded){
+    return(
+      <h1>Election has ended</h1>
+    )
+  }else if(candidates!= undefined && delegates!==undefined){
     return (
       <view>
         <ul>
@@ -85,5 +87,4 @@ export default function ElectionFunc() {
       </div>
     );
   }
-  
 }

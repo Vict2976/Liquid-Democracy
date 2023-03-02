@@ -1,5 +1,6 @@
 namespace Server.Controllers;
 
+using Core;
 using Repository;
 
 [ApiController]
@@ -18,7 +19,7 @@ public class ElectionController : ControllerBase
     [ProducesResponseType(typeof(Election), 201)]
     public async Task<ActionResult<Election?>> Post([FromBody] CreateElectionDTO createElectionDTO)
     {
-        var response = await _repository.CreateAsync(createElectionDTO.Name, createElectionDTO.Description, createElectionDTO.CreatedDate, null);
+        var response = await _repository.CreateAsync(createElectionDTO.Name, createElectionDTO.Description, createElectionDTO.CreatedDate, createElectionDTO.Candidates);
         return response;
     }
 
@@ -34,6 +35,13 @@ public class ElectionController : ControllerBase
     public async Task<Election?> GetElectionByID(int electionId){
         var election = await _repository.GetElectionByIDAsync(electionId);
         return election;
+    }
+
+    [AllowAnonymous]
+    [HttpPut ("{electionId}")]
+    public async Task<Response> CloseElection(int electionId){
+        var response = await _repository.CloseElection(electionId);
+        return response;
     }
 
 }

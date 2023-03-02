@@ -12,6 +12,7 @@ export interface Election
     name: string,
     description: string,
     createdDate: string,
+    isEnded: boolean,
     candidates: number[],
     votings: number[]
 } 
@@ -22,6 +23,11 @@ export interface Candidate
     name: string,
     recievedVotes: number,
     electionId: number,
+} 
+
+export interface CreateCandidate
+{
+    name: string
 } 
 
 export interface Votings

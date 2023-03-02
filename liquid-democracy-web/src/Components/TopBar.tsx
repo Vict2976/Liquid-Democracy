@@ -11,7 +11,7 @@ export default function TopBar() {
             🗳️
             </span>{" "}
           </div>
-          <div className="Title"> HomePage</div>
+          <div className="Title"> HomePage </div>
           <div>
             <button className="top-bar-button" onClick={() => window.location.replace("/CreateElection")}> Create New Election </button>
           </div>
