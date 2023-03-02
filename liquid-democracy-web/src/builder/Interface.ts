@@ -12,6 +12,7 @@ export interface Election
     name: string,
     description: string,
     createdDate: string,
+    isEnded: boolean,
     candidates: number[],
     votings: number[]
 } 

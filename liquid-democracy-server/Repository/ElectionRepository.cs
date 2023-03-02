@@ -1,3 +1,4 @@
+using Core;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository;
@@ -20,6 +21,8 @@ public class ElectionRepository : IElectionRepository
                 Name = name,
                 Description = description,
                 CreatedDate = createdDate,
+                IsEnded = false,
+                Candidates = candidates
             };
         _context.Elections.Add(election);
 
@@ -46,5 +49,19 @@ public class ElectionRepository : IElectionRepository
         var election = await _context.Elections.Where(c => c.ElectionId == electionId).Select(c=> c).FirstAsync();
 
         return election;
+    }
+
+    public async Task<Response<Election>> CloseElection(int electionId)
+    {
+        var election = await GetElectionByIDAsync(electionId);
+        election.IsEnded = true;
+        _context.Elections.Update(election);
+        await _context.SaveChangesAsync();
+
+        return new Response<Election>
+        {
+            HTTPResponse = HTTPResponse.Success,
+            Model = election
+        };      
     }
 }

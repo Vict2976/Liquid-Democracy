@@ -13,6 +13,7 @@ import MitID from './pages/MitID';
 import HomePage from './pages/HomePage';
 import Election from './pages/Election';
 import Register from './pages/Register';
+import Admin from './pages/Admin';
 import CreateElection from './pages/CreateElection';
 
 export default function App() {
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/MitID" element={<MitID />} />
         <Route path="/CreateElection" element={<CreateElection />} />
         <Route path="/Election" element={<Election/>} />
+        <Route path="/Admin" element={<Admin/>} />
       </Routes>
     </>
   );
