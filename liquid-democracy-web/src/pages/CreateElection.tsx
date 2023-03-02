@@ -7,6 +7,7 @@ import { ElectionService } from '../services/election.service';
 
 
 
+
 interface CheckboxProps {
   label: string;
 }
@@ -32,17 +33,20 @@ const CheckboxList: React.FC<CheckboxListProps> = ({
     onRemoveCheckbox(index);
   };
 
+  const [candidates, setCandidates] = useState('');
   const handleUpdateCheckboxLabel = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
     onUpdateCheckboxLabel(index, event.target.value);
+    setCandidates(event.target.value)
   };
 
+  
   return (
     <div>
       {checkboxes.map((checkbox, index) => (
         <div key={index}>
           <input
             type="text"
-            placeholder={`Checkbox ${index + 1}`}
+            placeholder={`Candidate ${index + 1}`}
             value={checkbox.label}
             onChange={(event) => handleUpdateCheckboxLabel(index, event)}
           />
@@ -62,6 +66,7 @@ export function getCurrentDate(separator=''){
     
     return `${date}` + "/" +  `${separator}${month<10?`0${month}`:`${month}`}${separator}` + "-" +`${year}`
 }
+
 
 
 function CreateElection() {
@@ -86,7 +91,6 @@ function CreateElection() {
     setCheckboxes(newCheckboxes);
   };
 
-
     const [elections, setElection] = useState<Election[]>();
    
     const electionService = new ElectionService(); 
@@ -95,27 +99,7 @@ function CreateElection() {
     const [userId, setUserId] = useState('');
     const [desciption, setDescription] = useState('');
 
-    const [candidates, setCandidates] = useState('');
-
-
-    //const [date, setDate] = useState('');
-    //const [possibleAnswer, setpossibleAnswer] = useState('');
-
-/*     const createElection = (e: React.FormEvent) => {
-        let promise = createElectionService.CreateElection(name, desciption, createdDate);
-        promise.catch( () => alert("An error occured, all input fields must be filled"))
-        promise.then((response) => {
-            setUserId(response);
-            })
-        }; */
-
-    /*
-    Overskrift
-    dato
-    beskrivelse
-    svarmuligheder
-    */
-
+  
     return(
         <div className='CreateElection' style={{display: 'flex',  justifyContent:'center', alignItems:'center', height: '100vh'}}>
             <div>
