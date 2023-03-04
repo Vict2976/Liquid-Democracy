@@ -14,13 +14,13 @@
         // get the response body (the method explained below)
         let json = await response.json();
         let url = json.url;
-        //console.log(url);
+        console.log(json.id)
+        
+        localStorage.setItem("sessionId", json.id);
+        console.log(localStorage.getItem("sessionId"))
+
         window.open(url);
       } else {
         alert("HTTP-Error: " + response.status);
       }
-    //.then(response => (extractDataFetch(response.text())))
-    //.then(result => console.log(result))
-    //.catch(error => console.log('error', error));
-
 } 

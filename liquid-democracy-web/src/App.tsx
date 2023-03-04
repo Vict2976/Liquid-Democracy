@@ -17,7 +17,10 @@ import Admin from './pages/Admin';
 import CreateElection from './pages/CreateElection';
 import VoteAfterMitId from './pages/VoteAfterMitId';
 
+
 export default function App() {
+  let id = localStorage.getItem("sessionId")
+
   return (
     <>
       <Routes>
@@ -28,7 +31,7 @@ export default function App() {
         <Route path="/MitID" element={<MitID />} />
         <Route path="/CreateElection" element={<CreateElection />} />
         <Route path="/Election" element={<Election/>} />
-        <Route path="/VoteAfterMitId" element={<VoteAfterMitId/>} />
+        <Route path="/VoteAfterMitId" element={ id==null ? <Login/> :(<VoteAfterMitId/> ) } />
         <Route path="/Admin" element={<Admin/>} />
       </Routes>
     </>
