@@ -21,7 +21,7 @@ const Login = () => {
       promise.catch( () => alert("Wrong credentials"))
       promise.then((response) => {
         goToHome()
-        sessionStorage.setItem("userId", response.userId)
+        localStorage.setItem("userId", response.userId)
       })
   };
 

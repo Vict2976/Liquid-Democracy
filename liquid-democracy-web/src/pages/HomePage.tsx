@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import '../styling/HomePage.css';
 import TopBar from '../Components/TopBar';
+import { VoteService } from '../services/vote.service';
 
 function HomePage() {
   const [elections, setElections] = useState<Election[]>();

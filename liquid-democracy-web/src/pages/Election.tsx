@@ -4,6 +4,7 @@ import { ElectionService } from "../services/election.service";
 import { Election, Candidate, User } from "../builder/Interface";
 import {Form, Button, Alert} from 'react-bootstrap';
 import { fetchStartMitIDSession } from "../fetch";
+import { VoteService } from "../services/vote.service";
 
 
 
@@ -14,14 +15,13 @@ export default function ElectionFunc() {
   const [election, setElection] = useState<Election>();
   const [candidates, setCandidates] = useState<Candidate[]>();
   const [delegates, setDelegates] = useState<User[]>();
+  const voteService = new VoteService()
+
 
   let { state } = useLocation();
   let id = Number(state);
-  /*     const singleElection = () => {
-        GetElectionFromId(Number(state)).then((elect) => {
-            setElection(elect)
-          });
-    } */
+
+
 
   useEffect(() => {
     electionService.GetElectionFromId(id).then((messages) => {
@@ -30,16 +30,33 @@ export default function ElectionFunc() {
   }, []);
 
   useEffect(()=>{
-    electionService.GetAllCandidatesFromElecttion( id).then((candidates) => {
+    electionService.GetAllCandidatesFromElecttion(id).then((candidates) => {
       setCandidates(candidates);
     });
   },[]);
 
   useEffect(()=>{
-    electionService.GetAllDelegatesFromElecttion( id).then((del) => {
+    electionService.GetAllDelegatesFromElecttion(id).then((del) => {
       setDelegates(del);
     });
   },[]);
+
+  function setDataVotingCandidate(candidateId: number )
+  {
+    localStorage.setItem("electionId", String(election?.electionId));
+    localStorage.setItem("candidateId", String(candidateId));
+    localStorage.setItem("delegateId", "");
+    console.log(localStorage);
+    fetchStartMitIDSession();
+  }
+  function setDataVotingDelegate(delegateId: number )
+  {
+    localStorage.setItem("electionId", String(election?.electionId));
+    localStorage.setItem("delegateId", String(delegateId));
+    localStorage.setItem("candidateId", "");
+    console.log(localStorage);
+    fetchStartMitIDSession();
+  }
 
   if (election?.isEnded){
     return(
@@ -62,7 +79,7 @@ export default function ElectionFunc() {
         {candidates.map((can) => (
           <ul>
             <li>{can.name}</li>
-            <button onClick={()=> fetchStartMitIDSession()}> Vote For: {can.name}</button>
+            <button onClick={()=> setDataVotingCandidate(can.candidateId)}> Vote For: {can.name}</button>
           </ul>
         ))}
         </div>
@@ -73,7 +90,7 @@ export default function ElectionFunc() {
         {delegates.map((del) => (
           <ul>
             <li>{del.userName}</li>
-            <button onClick={()=> fetchStartMitIDSession()}>Delegate Vote To: {del.userName}</button>
+            <button onClick={()=> setDataVotingDelegate(del.userId)}>Delegate Vote To: {del.userName}</button>
           </ul>
 
         ))}

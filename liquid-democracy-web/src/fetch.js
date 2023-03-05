@@ -17,7 +17,6 @@
         console.log(json.id)
         
         localStorage.setItem("sessionId", json.id);
-        console.log(localStorage.getItem("sessionId"))
 
         window.open(url);
       } else {
