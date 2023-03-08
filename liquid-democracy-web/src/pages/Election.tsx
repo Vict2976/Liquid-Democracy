@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { ElectionService } from "../services/election.service";
 import { Election, Candidate, User } from "../builder/Interface";
 import {Form, Button, Alert} from 'react-bootstrap';
-import { fetchStartMitIDSession } from "../fetch";
+import { FinalizeVoteForCandidate, FinalizeVoteForDelegate } from "../fetch";
 import { VoteService } from "../services/vote.service";
 
 
@@ -16,6 +16,7 @@ export default function ElectionFunc() {
   const [candidates, setCandidates] = useState<Candidate[]>();
   const [delegates, setDelegates] = useState<User[]>();
   const voteService = new VoteService()
+  const userId = localStorage.getItem("userId")
 
 
   let { state } = useLocation();
@@ -43,19 +44,11 @@ export default function ElectionFunc() {
 
   function setDataVotingCandidate(candidateId: number )
   {
-    localStorage.setItem("electionId", String(election?.electionId));
-    localStorage.setItem("candidateId", String(candidateId));
-    localStorage.setItem("delegateId", "");
-    console.log(localStorage);
-    fetchStartMitIDSession();
+    FinalizeVoteForCandidate(Number(userId), election?.electionId, candidateId);
   }
   function setDataVotingDelegate(delegateId: number )
   {
-    localStorage.setItem("electionId", String(election?.electionId));
-    localStorage.setItem("delegateId", String(delegateId));
-    localStorage.setItem("candidateId", "");
-    console.log(localStorage);
-    fetchStartMitIDSession();
+    FinalizeVoteForDelegate(Number(userId), election?.electionId, delegateId);
   }
 
   if (election?.isEnded){

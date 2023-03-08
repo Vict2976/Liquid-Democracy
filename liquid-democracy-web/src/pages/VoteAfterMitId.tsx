@@ -2,7 +2,6 @@ import { VoteService } from "../services/vote.service";
 
 
 function VoteAfterMitId() {  
-  localStorage.removeItem("sessionId");
 
   var electionId = localStorage.getItem("electionId");
   var delegateId = localStorage.getItem("delegateId");
