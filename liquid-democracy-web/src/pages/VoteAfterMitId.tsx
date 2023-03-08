@@ -20,10 +20,12 @@ function VoteAfterMitId() {
       }else if (candidateId != ""){
         //insert data into voteUsedOn with candidateId
         voteService.postVoteUsedOnCandidate(data.voteId, Number(candidateId));
+        console.log("You successfully voted for a CANDIDATE")
 
       } else {
         //voteUsed on with delegateId
         voteService.postVoteUsedOnDelegate(data.voteId, Number(delegateId), Number(electionId));
+        console.log("You successfully voted for a DELEGATE")
       }
     
     })
