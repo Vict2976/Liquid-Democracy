@@ -1,46 +1,100 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ElectionService } from "../services/election.service";
-import { Election } from "../builder/Interface";
+import { Election, Candidate, User } from "../builder/Interface";
+import {Form, Button, Alert} from 'react-bootstrap';
+import { FinalizeVoteForCandidate, FinalizeVoteForDelegate } from "../fetch";
+import { VoteService } from "../services/vote.service";
 
-//Får Id med videre og så kalde en fetch på /GetElectionByID
+
 
 export default function ElectionFunc() {
 
   const electionService = new ElectionService(); 
 
   const [election, setElection] = useState<Election>();
+  const [candidates, setCandidates] = useState<Candidate[]>();
+  const [delegates, setDelegates] = useState<User[]>();
+  const voteService = new VoteService()
+  const userId = localStorage.getItem("userId")
+
+
   let { state } = useLocation();
   let id = Number(state);
-  /*     const singleElection = () => {
-        GetElectionFromId(Number(state)).then((elect) => {
-            setElection(elect)
-          });
-    } */
+
+
 
   useEffect(() => {
     electionService.GetElectionFromId(id).then((messages) => {
-      console.log("HHHER:::" + messages);
       setElection(messages);
     });
   }, []);
+
+  useEffect(()=>{
+    electionService.GetAllCandidatesFromElecttion(id).then((candidates) => {
+      setCandidates(candidates);
+    });
+  },[]);
+
+  useEffect(()=>{
+    electionService.GetAllDelegatesFromElecttion(id).then((del) => {
+      setDelegates(del);
+    });
+  },[]);
+
+  function setDataVotingCandidate(candidateId: number )
+  {
+    FinalizeVoteForCandidate(Number(userId), election?.electionId, candidateId);
+  }
+  function setDataVotingDelegate(delegateId: number )
+  {
+    FinalizeVoteForDelegate(Number(userId), election?.electionId, delegateId);
+  }
 
   if (election?.isEnded){
     return(
       <h1>Election has ended</h1>
     )
-  }else{
-  return (
-    <view>
-      <ul>
-        <li>{election?.name}</li>
-        <li>{election?.description}</li>
-        <li>{election?.createdDate}</li>
-        <li>{election?.electionId}</li>
-        <li>{election?.candidates}</li>
-        <li>{election?.votings}</li>
-      </ul>
-    </view>
-  );
+  }else if(candidates!= undefined && delegates!==undefined){
+    return (
+      <view>
+        <ul>
+          <li>{election?.name}</li>
+          <li>{election?.description}</li>
+          <li>{election?.createdDate}</li>
+          <li>{election?.electionId}</li>
+          <li>{election?.candidates}</li>
+          <li>{election?.votings}</li>
+        </ul>
+  
+        <div>
+          <h3>Candidates</h3>
+        {candidates.map((can) => (
+          <ul>
+            <li>{can.name}</li>
+            <button onClick={()=> setDataVotingCandidate(can.candidateId)}> Vote For: {can.name}</button>
+          </ul>
+        ))}
+        </div>
+      
+        <div>
+          <h3>Delegates</h3>
+        
+        {delegates.map((del) => (
+          <ul>
+            <li>{del.userName}</li>
+            <button onClick={()=> setDataVotingDelegate(del.userId)}>Delegate Vote To: {del.userName}</button>
+          </ul>
+
+        ))}
+        </div>
+      </view>
+    );
+  }else {
+    return (
+      <div className="page">
+        <p>Error</p>
+      </div>
+    );
   }
 }

@@ -11,8 +11,8 @@ function Register() {
 
   const navigate = useNavigate();
   
-  const goToHome= () => {
-    navigate('/'); 
+  const goToLogin= () => {
+    navigate('/login'); 
   };
 
   const submit = (e: React.FormEvent) => {
@@ -25,7 +25,7 @@ function Register() {
     let promise = userService.Register(username, email, password);
     promise.catch( () => alert("An error occured, all input fields must be filled"))
     promise.then((response) => {
-        goToHome()
+        goToLogin()
         sessionStorage.setItem("userId", response.userId)
     })
     };
