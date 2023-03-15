@@ -9,7 +9,6 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import '../styling/HomePage.css';
 import TopBar from '../Components/TopBar';
-import { VoteService } from '../services/vote.service';
 
 function HomePage() {
   const [elections, setElections] = useState<Election[]>();
@@ -41,7 +40,7 @@ function HomePage() {
                   </Typography>
                 </CardContent>
                 <CardActions>
-                  <Link to = "/Election" state={ele.electionId} onClick={()=> console.log(elections)}>
+                  <Link to = "/Election" state={ele.electionId} onClick={()=> console.log(ele)}>
                       See Election
                   </Link>
                   <Typography >

@@ -40,4 +40,9 @@ public class VoteRepository : IVoteRepository
             return null;
         }
     }
+
+    public async Task AddDocumentID(int documentId){
+
+    }
+
 }

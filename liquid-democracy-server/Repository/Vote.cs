@@ -8,6 +8,7 @@ public class Vote
     public int VoteId { get; set; }
     public int BelongsToId { get; set; }
     public int ElectionId { get; set; }
+    public string DocumentId { get; set; }
 
     public User User { get; set; }
     public Election Election { get; set; }

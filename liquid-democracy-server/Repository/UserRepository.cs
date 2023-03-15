@@ -81,28 +81,50 @@ public class UserRepository : IUserRepository
             var user = await _context.Users.Where(u => u.UserId == vote.BelongsToId).FirstOrDefaultAsync();
             listOfDelegates.Add(user);
         }
+        return listOfDelegates;
+    }
 
-/*         
-        var votesUsedOnList = new List<VoteUsedOn>();
+    public Response<User> AddMidIDSession(int userId){
+        var user = _context.Users.Where(u => u.UserId == userId).Select(u => u).First();
 
-
-        foreach(var vote in votesInElection)
+        if (user == null)
         {
-            var votesUsedOn = await _context.VoteUsedOns.Where(VUO => VUO.VoteId == vote.VoteId).FirstOrDefaultAsync();
-            if(votesUsedOn != null){
-                votesUsedOnList.Add(votesUsedOn); 
-            }
+            return new Response<User>
+            {
+                HTTPResponse = HTTPResponse.NotFound
+            };
         }
 
-        var delegateList = new List<User>();
-       foreach(var voteUsedOn in votesUsedOnList)
-        {
-            var delegatedUser = await _context.Users.Where(u => u.UserId == voteUsedOn.DelegateId).FirstOrDefaultAsync();
-            if(delegatedUser != null){
-                delegateList.Add(delegatedUser);
-            }
-        } */
+        user.LoggedInWithNemId = DateTime.Now;
+        _context.Users.Update(user);
+        _context.SaveChangesAsync();
 
-        return listOfDelegates;
+        return new Response<User>
+        {
+            HTTPResponse = HTTPResponse.Success,
+            Model = user
+        };        
+    }
+
+    public async Task<bool> CheckMitIDTimeStamp(int userId){
+        var user = _context.Users.Where(u => u.UserId == userId).Select(u => u).First();
+        if (user == null){
+            throw new Exception();
+        }
+        return IsLoggedInWithinThiryMinues(user.LoggedInWithNemId);
+    }
+
+    private bool IsLoggedInWithinThiryMinues(DateTime? mitIdLoggedInAt)
+    {
+        if (mitIdLoggedInAt != null)
+        {
+            var timeSinceLoggedIn = DateTime.Now.Subtract((DateTime)mitIdLoggedInAt);
+            if (timeSinceLoggedIn.TotalMinutes > 30){
+                return false;
+            }else{
+                return true;
+            }
+        }    
+        return false;
     }
 }

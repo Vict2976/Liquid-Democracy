@@ -5,6 +5,7 @@ import { Election, Candidate, User } from "../builder/Interface";
 import {Form, Button, Alert} from 'react-bootstrap';
 import { FinalizeVoteForCandidate, FinalizeVoteForDelegate } from "../fetch";
 import { VoteService } from "../services/vote.service";
+import { UserService } from "../services/user.service";
 
 
 
@@ -42,6 +43,24 @@ export default function ElectionFunc() {
     });
   },[]);
 
+  function checkLogin(){
+    const userSerivce = new UserService();
+
+    let userId = sessionStorage.getItem('userId')
+
+    if (userId == "undefined"){
+      alert("You must be logged in to vote")
+      return
+    }
+
+    userSerivce.CheckIfUserIsLoggedIn(Number (userId)).then((result) => {
+      const isUserLoggedIn = result;
+      if(!isUserLoggedIn){
+        alert("You must be logged in to vote")
+      }
+    })
+  }
+
   function setDataVotingCandidate(candidateId: number )
   {
     FinalizeVoteForCandidate(Number(userId), election?.electionId, candidateId);
@@ -72,7 +91,7 @@ export default function ElectionFunc() {
         {candidates.map((can) => (
           <ul>
             <li>{can.name}</li>
-            <button onClick={()=> setDataVotingCandidate(can.candidateId)}> Vote For: {can.name}</button>
+            <button onClick={()=> checkLogin()}> Vote For: {can.name}</button>
           </ul>
         ))}
         </div>
@@ -83,7 +102,7 @@ export default function ElectionFunc() {
         {delegates.map((del) => (
           <ul>
             <li>{del.userName}</li>
-            <button onClick={()=> setDataVotingDelegate(del.userId)}>Delegate Vote To: {del.userName}</button>
+            <button onClick={()=> checkLogin()}>Delegate Vote To: {del.userName}</button>
           </ul>
 
         ))}
