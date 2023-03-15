@@ -1,6 +1,25 @@
 namespace Repository;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
+using System;
+
+
+public class UserIDGenerator : ValueGenerator<int>
+{
+
+    public override bool GeneratesTemporaryValues => false;
+
+    private int GenerateRandomNumber()
+    {
+        Random random = new Random(); 
+        var i = random.Next(1,20);
+        return i;
+    }
+
+    public override int Next(EntityEntry entry) => GenerateRandomNumber();
+}
 public class LiquidDemocracyContext : DbContext, ILiquidDemocracyContext
 {
     public DbSet<User> Users => Set<User>();
@@ -48,6 +67,9 @@ public class LiquidDemocracyContext : DbContext, ILiquidDemocracyContext
     modelBuilder.Entity<VoteUsedOn>()
         .HasOne(v => v.Delegate)
         .WithMany(u => u.DelegatedVotes);
-    }
 
+    modelBuilder.Entity<User>()
+        .Property(u => u.UserId).HasValueGenerator<UserIDGenerator>();
+    }
+    
 }
