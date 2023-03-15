@@ -14,7 +14,7 @@ public class UserIDGenerator : ValueGenerator<int>
     private int GenerateRandomNumber()
     {
         Random random = new Random(); 
-        var i = random.Next(1,20);
+        var i = random.Next(11000,2000000000);
         return i;
     }
 
