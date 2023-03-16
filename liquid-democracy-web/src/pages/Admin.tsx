@@ -1,6 +1,9 @@
 import { Component } from 'react';
 import { Election } from '../builder/Interface';
+import { AdminService } from '../services/admin.service';
 import { AppService } from '../services/app.service';
+import { CandidateService } from '../services/candidate.service';
+import { VoteService } from '../services/vote.service';
 import '../styling/HomePage.css';
 
 interface AdminProps {}
@@ -11,6 +14,9 @@ interface AdminState {
 
 class Admin extends Component<AdminProps, AdminState> {
   appService = new AppService();
+  adminService = new AdminService();
+  candidateService = new CandidateService();
+  voteService = new VoteService();
 
   constructor(props: AdminProps) {
     super(props);
@@ -18,6 +24,33 @@ class Admin extends Component<AdminProps, AdminState> {
       elections: undefined
     };
   }
+
+  VerifyElection = async (electionId : number) => {
+    const isVerified = this.adminService.VerifyElection(electionId).then((response) => 
+      response
+    )
+    if (await isVerified){
+      alert("This election is Verified, you can close it!")
+    }else{
+      alert("This elction has been tampered with!!")
+    }
+  }
+
+  FindElectionWinner = async (electionId : number ) =>{
+    const candidateWinnder =  this.candidateService.FindCandidateWinner(electionId).then((response) => response)
+    alert (await candidateWinnder)
+  }
+
+  VerifyAmountOfVotesInSystem = async (electionId : number) => {
+    const candidateVotes =  this.candidateService.CountVotesForCandidates(electionId).then((response) => response);
+    const amountOfVotes = this.voteService.CountAllVotesForElection(electionId).then((response) => response);
+    if (await candidateVotes == await amountOfVotes){
+      alert("This election is has correct votes, you can close it!")
+    }else{
+      alert("This elction has been tampered with!!")
+    }
+  }
+
 
   CloseElection = (election: Election) => {
     if (election.isEnded) {
@@ -45,7 +78,10 @@ class Admin extends Component<AdminProps, AdminState> {
             {elections.map((ele) => (
               <div key={ele.electionId}>
                 {ele.name}
-                <button onClick={() => this.CloseElection(ele)}>Click here to end election</button>
+                <button onClick={() => this.VerifyElection(ele.electionId)}>Verify the elction signatures</button>
+                <button onClick={() => this.VerifyAmountOfVotesInSystem(ele.electionId)}>Verify amount of votes in system election</button>
+                <button onClick={() => this.FindElectionWinner(ele.electionId)}>Find Winner</button>
+                <button onClick={() => this.CloseElection(ele)}>End election</button>
               </div>
             ))}
           </header>
