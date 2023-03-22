@@ -44,7 +44,7 @@ public class VoteRepository : IVoteRepository
 
     public async Task<IEnumerable<Vote?>> ReadFromElectionId(int electionId){
         try{ 
-        var votes = await _context.Votes.Where(v => v.ElectionId == electionId).ToListAsync();
+            var votes = await _context.Votes.Where(v => v.ElectionId == electionId).ToListAsync();
              return votes;
         }catch{
             return null;
