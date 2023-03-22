@@ -51,6 +51,16 @@ class Admin extends Component<AdminProps, AdminState> {
     }
   }
 
+  VerifyRootHash = async (electionId : number) => {
+    const isVerified = this.adminService.VerifyRootHash(electionId).then((response) => 
+      response
+    )
+    if (await isVerified){
+      alert("This election is Verified, you can close it!")
+    }else{
+      alert("This elction has been tampered with!!")
+    }
+  }
 
   CloseElection = (election: Election) => {
     if (election.isEnded) {
@@ -79,6 +89,7 @@ class Admin extends Component<AdminProps, AdminState> {
               <div key={ele.electionId}>
                 {ele.name}
                 <button onClick={() => this.VerifyElection(ele.electionId)}>Verify the elction signatures</button>
+                <button onClick={() => this.VerifyRootHash(ele.electionId)}>Verify the root hash of election</button>
                 <button onClick={() => this.VerifyAmountOfVotesInSystem(ele.electionId)}>Verify amount of votes in system election</button>
                 <button onClick={() => this.FindElectionWinner(ele.electionId)}>Find Winner</button>
                 <button onClick={() => this.CloseElection(ele)}>End election</button>

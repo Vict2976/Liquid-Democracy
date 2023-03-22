@@ -8,12 +8,14 @@ public class VoteUsedOnController : ControllerBase
 {
     readonly IVoteUsedOnRepository _repository;
     readonly IVoteRepository _voteRepository;
+    readonly IElectionRepository _electionRepository;
 
 
-    public VoteUsedOnController(IVoteUsedOnRepository repository, IVoteRepository voteRepository)
+    public VoteUsedOnController(IVoteUsedOnRepository repository, IVoteRepository voteRepository, IElectionRepository electionRepository)
     {
         _repository = repository;
         _voteRepository = voteRepository;
+        _electionRepository = electionRepository;
     }
 
     [AllowAnonymous]
@@ -29,7 +31,14 @@ public class VoteUsedOnController : ControllerBase
             return null;
         }
 
+        Console.WriteLine("TESTHALLO");
+        if (!await verifyRootHash(electionId)){
+            Console.WriteLine("CANNOT VERIFY ROOT HASH");
+            return null;
+        }
+
         var vote = await _voteRepository.CreateAsync(userId, electionId, documentId);
+        await buildNewRootHash(electionId);
 
         await _repository.CreateVoteUsedOnForCandidate(vote.VoteId, candidateId);
 
@@ -56,5 +65,54 @@ public class VoteUsedOnController : ControllerBase
 
 
         return  new RedirectResult(url: "http://localhost:3000/Register", permanent: true, preserveMethod: true);
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    [Route("/VerifyRootHash/{electionId}")]
+    public async Task<bool> VeirfyElectionByRootHash(int electionId){
+        var canBeVerified = await verifyRootHash(electionId);
+        return canBeVerified;
+    }
+
+
+    private async Task<bool> verifyRootHash(int electionId){
+        var votes = await _voteRepository.ReadFromElectionId(electionId);
+        var election = await _electionRepository.GetElectionByIDAsync(electionId);
+
+        if (election == null){
+            return false;
+        }
+
+        if (votes.Count() == 0){
+            return true;
+        }
+
+        var RootHashForElection = election.RootHash;
+        var documentIds = new List<string>();
+
+        foreach(var vote in votes){            
+            documentIds.Add(vote.DocumentId);
+        }
+
+        MerkleTree merkleTree = new MerkleTree(documentIds);
+        if (RootHashForElection == merkleTree.RootHash){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private async Task buildNewRootHash(int electionId){
+        var votes = await _voteRepository.ReadFromElectionId(electionId);
+
+        var documentIds = new List<string>();
+
+        foreach(var vote in votes){
+            documentIds.Add(vote.DocumentId);
+        }
+
+        MerkleTree merkleTree = new MerkleTree(documentIds);
+        await _electionRepository.UpdateElectionRootHash(electionId, merkleTree.RootHash);
     }
 }
