@@ -18,9 +18,9 @@ public class VoteUsedOnController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet]
-    [Route("/ForCandidate/{userId}/{electionId}/{candidateId}")]
+    [Route("/ForCandidate/{userId}/{electionId}/{candidateId}/{documentId}")]
     [ProducesResponseType(typeof(VoteUsedOn), 201)]
-    public async Task<RedirectResult> CreateVoteUsedOnForCandidate(int userId, int electionId, int candidateId)
+    public async Task<RedirectResult> CreateVoteUsedOnForCandidate(int userId, int electionId, int candidateId, string documentId)
     {
         var checkForVote = _voteRepository.checkForExistingVote(userId, electionId);
 
@@ -29,7 +29,7 @@ public class VoteUsedOnController : ControllerBase
             return null;
         }
 
-        var vote = await _voteRepository.CreateAsync(userId, electionId);
+        var vote = await _voteRepository.CreateAsync(userId, electionId, documentId);
 
         await _repository.CreateVoteUsedOnForCandidate(vote.VoteId, candidateId);
 
@@ -38,9 +38,9 @@ public class VoteUsedOnController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet]
-    [Route("/ForDelegate/{userId}/{electionId}/{delegateId}")]
+    [Route("/ForDelegate/{userId}/{electionId}/{delegateId}/{documentId}")]
     [ProducesResponseType(typeof(VoteUsedOn), 201)]
-    public async Task<RedirectResult> CreateVoteUsedOnForDelegate(int userId, int electionId, int delegateId)
+    public async Task<RedirectResult> CreateVoteUsedOnForDelegate(int userId, int electionId, int delegateId, string documentId)
     {
         var checkForVote = _voteRepository.checkForExistingVote(userId, electionId);
 
@@ -49,7 +49,7 @@ public class VoteUsedOnController : ControllerBase
             return null;
         }
 
-        var vote = await _voteRepository.CreateAsync(userId, electionId);
+        var vote = await _voteRepository.CreateAsync(userId, electionId, documentId);
 
 
         var response = await _repository.CreateVoteUsedOnForDelegate(vote.VoteId, delegateId, electionId);

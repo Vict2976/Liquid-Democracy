@@ -67,4 +67,21 @@ public class UserController : ControllerBase
         var response = _repository.GetAllDelegetasByElection(electionId);
         return response;
     }
+
+    [HttpGet("/AddMitIDSession/{userId}")]
+    [AllowAnonymous]
+    public RedirectResult AddMitIDSession(int userId)
+    {
+        var response = _repository.AddMidIDSession(userId);
+        return new RedirectResult(url: "http://localhost:3000/", permanent: true, preserveMethod: true);
+
+    }
+
+    [HttpGet("/AddMitIDSession/TimeStamp/{userId}")]
+    [AllowAnonymous]
+    public Task<bool> CheckMitIdTimeStamp(int userId){
+        var response = _repository.CheckMitIDTimeStamp(userId);
+        return response;
+    }
+
 }

@@ -25,7 +25,7 @@ public class VoteController : ControllerBase
             return StatusCode(StatusCodes.Status403Forbidden);
         }
 
-        var response = await _repository.CreateAsync(voteDTO.userId, voteDTO.electionId);
+        var response = await _repository.CreateAsync(voteDTO.userId, voteDTO.electionId, voteDTO.documentId);
         return response;
     }
 
@@ -34,5 +34,13 @@ public class VoteController : ControllerBase
     public async Task<IEnumerable<Vote?>> Get(){
         var votes = await _repository.ReadAllAsync();
         return votes;
+    }
+
+    [AllowAnonymous]
+    [Route("/countVoters/{electionId}")]
+    [HttpGet]
+    public async Task<int> GetAmountOfVoters(int electionId){
+        var votes = await _repository.ReadFromElectionId(electionId);
+        return votes.Count();
     }
 }
