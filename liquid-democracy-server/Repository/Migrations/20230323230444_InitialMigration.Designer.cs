@@ -12,7 +12,7 @@ using Repository;
 namespace Repository.Migrations
 {
     [DbContext(typeof(LiquidDemocracyContext))]
-    [Migration("20230323222654_InitialMigration")]
+    [Migration("20230323230444_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
