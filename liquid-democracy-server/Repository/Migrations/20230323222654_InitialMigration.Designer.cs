@@ -2,9 +2,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Repository;
 
 #nullable disable
@@ -12,34 +12,38 @@ using Repository;
 namespace Repository.Migrations
 {
     [DbContext(typeof(LiquidDemocracyContext))]
-    [Migration("20230223141546_InitialMigration")]
+    [Migration("20230323222654_InitialMigration")]
     partial class InitialMigration
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.6")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("ProductVersion", "7.0.4")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Repository.Candidate", b =>
                 {
-                    b.Property<int>("CandidateID")
+                    b.Property<int>("CandidateId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CandidateID"), 1L, 1);
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CandidateId"));
 
                     b.Property<int>("ElectionId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
-                    b.HasKey("CandidateID");
+                    b.Property<int>("RecievedVotes")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CandidateId");
 
                     b.HasIndex("ElectionId");
 
@@ -48,24 +52,27 @@ namespace Repository.Migrations
 
             modelBuilder.Entity("Repository.Election", b =>
                 {
-                    b.Property<int>("ElectionID")
+                    b.Property<int>("ElectionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ElectionID"), 1L, 1);
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ElectionId"));
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsEnded")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
-                    b.HasKey("ElectionID");
+                    b.HasKey("ElectionId");
 
                     b.ToTable("Elections");
                 });
@@ -73,19 +80,16 @@ namespace Repository.Migrations
             modelBuilder.Entity("Repository.User", b =>
                 {
                     b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
+                        .HasColumnType("integer");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId");
 
@@ -96,15 +100,15 @@ namespace Repository.Migrations
                 {
                     b.Property<int>("VoteId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VoteId"), 1L, 1);
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VoteId"));
 
                     b.Property<int>("BelongsToId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("ElectionId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("VoteId");
 
@@ -117,23 +121,28 @@ namespace Repository.Migrations
 
             modelBuilder.Entity("Repository.VoteUsedOn", b =>
                 {
-                    b.Property<int>("VoteId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CandidateId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DelegateId")
-                        .HasColumnType("int");
-
                     b.Property<int>("VoteUsedOnId")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                    b.HasKey("VoteId", "CandidateId", "DelegateId");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VoteUsedOnId"));
+
+                    b.Property<int?>("CandidateId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("DelegateId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("VoteId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("VoteUsedOnId");
 
                     b.HasIndex("CandidateId");
 
                     b.HasIndex("DelegateId");
+
+                    b.HasIndex("VoteId");
 
                     b.ToTable("VoteUsedOns");
                 });
@@ -173,14 +182,11 @@ namespace Repository.Migrations
                     b.HasOne("Repository.Candidate", "Candidate")
                         .WithMany("DelegatedVotes")
                         .HasForeignKey("CandidateId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Repository.User", "Delegate")
                         .WithMany("DelegatedVotes")
-                        .HasForeignKey("DelegateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DelegateId");
 
                     b.HasOne("Repository.Vote", "Vote")
                         .WithMany("DelegatedVotes")

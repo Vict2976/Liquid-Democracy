@@ -1,19 +1,16 @@
 $password = New-Guid
-docker ps -aq | xargs docker stop
-$string = uname -v
-if ($string -clike "*/RELEASE_X86_64*") { 
-    docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=$password" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
-} else {
-    docker run --cap-add SYS_PTRACE -e 'ACCEPT_EULA=1' -e "SA_PASSWORD=$password" -p 1433:1433 -d mcr.microsoft.com/azure-sql-edge
-}
+$port = "5433"
 $database = "liquiddemocracy"
-$connectionString = "Server=localhost;Database=$database;User Id=sa;Password=$password"
+docker ps -aq | xargs docker stop
 cd ./API/
 dotnet user-secrets init
+$connectionString = "Host=localhost;Port=$port;Username=postgres;Password=$password;Database=$database"
 dotnet user-secrets set "ConnectionStrings:liquiddemocracy" "$connectionString"
-Set-Clipboard -Value  $connectionString
+Set-Clipboard -Value $connectionString
+docker run -e POSTGRES_PASSWORD=$password -p 5433:5432 -d postgres
 cd ../Repository/
 rm -r ./Migrations/
 dotnet ef migrations add InitialMigration -s ../API/
 dotnet ef database update -s ../API/
 cd ..
+

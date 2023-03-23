@@ -14,7 +14,7 @@ builder.Services.Configure<HashSettings>(builder.Configuration.GetSection(nameof
 builder.Services.AddScoped<IHasher, Hasher>();
 
 builder.Services.AddDbContext<LiquidDemocracyContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("liquiddemocracy")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("liquiddemocracy")));
 builder.Services.AddScoped<ILiquidDemocracyContext, LiquidDemocracyContext>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICandidateRepository, CandidateRepository>();
