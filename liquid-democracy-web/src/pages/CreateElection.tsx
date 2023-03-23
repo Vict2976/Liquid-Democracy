@@ -1,7 +1,5 @@
 import React from 'react';
 import { useContext, useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
 import { Election } from '../builder/Interface';
 import { ElectionService } from '../services/election.service';
 

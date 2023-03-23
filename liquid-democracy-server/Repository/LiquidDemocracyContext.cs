@@ -64,10 +64,6 @@ public class LiquidDemocracyContext : DbContext, ILiquidDemocracyContext
         .WithMany(c => c.DelegatedVotes)
         .OnDelete(DeleteBehavior.Restrict);
 
-    modelBuilder.Entity<VoteUsedOn>()
-        .HasOne(v => v.Delegate)
-        .WithMany(u => u.DelegatedVotes);
-
     modelBuilder.Entity<User>()
         .Property(u => u.UserId).HasValueGenerator<UserIDGenerator>();
     }

@@ -4,11 +4,10 @@ using Core;
 
 public interface IUserRepository
 { 
-    Response<User> Create(string username, string email, string password);
+    Task<User> Create(string providerId, DateTime sessionExpires);
     Task<IEnumerable<User>> ReadAllAsync();
-    Response<User> GetByUsername(string username);
-    Task<IEnumerable<User>> GetAllDelegetasByElection(int electionId);
-    Response<User> AddMidIDSession(int userId);
+    Task<User> GetByProiverId(string providerId);
 
-    Task<bool> CheckMitIDTimeStamp(int userId);
+    Task<User> UpdateSessionTime(string providerId, DateTime updatedExpireTime);
+
 }

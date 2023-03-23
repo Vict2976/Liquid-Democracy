@@ -17,18 +17,6 @@ public class UserController : ControllerBase
         _hasher = hasher;
     }
 
-    [HttpPost]
-    [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    [Route("/register")]
-    public void Register([FromBody] RegisterDTO registerDTO)
-    {
-        _hasher.Hash(registerDTO.Password, out string hashedPassword);
-        var response = _repository.Create(registerDTO.Username, registerDTO.Email, hashedPassword);
-        response.ToActionResult();
-    }
-
     [AllowAnonymous]
     [HttpGet]
     public async Task<IEnumerable<User>> Get(){
@@ -36,52 +24,34 @@ public class UserController : ControllerBase
         return users;
     }
 
+    [AllowAnonymous]
     [HttpPost]
-    [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [Route("/login")]
-    public IActionResult Login([FromBody]LoginDTO loginDTO)
-    {
-        var response = _repository.GetByUsername(loginDTO.Username);
+    public async Task<User> CreateUser([FromBody] UserDTO userDto){
+        var user = await _repository.Create(userDto.ProiverId, userDto.SessionExpires);
+        return user;
+    }
 
-        if (response.HTTPResponse == HTTPResponse.NotFound)
-        {
-            return Unauthorized("Invalid username");
+    [AllowAnonymous]
+    [HttpGet]
+    [Route("/GetUser/{providerId}")]  
+    public async Task<User?> GetUser(string providerId){
+        try {
+            var user = await _repository.GetByProiverId(providerId);
+            return user;
+        }catch (Exception e){
+            return null;
         }
+    }
 
-        var validPassword = _hasher.VerifyHash(loginDTO.Password, response.Model!.Password!);
-
-        if (!validPassword)
-        {
-            return Unauthorized("Invalid password");
+    [AllowAnonymous]
+    [HttpPut]
+    [Route("/UpdateSession")]  
+    public async Task<User?> UpdateSession([FromBody] UserDTO userDto){
+        try {
+            var user = await _repository.UpdateSessionTime(userDto.ProiverId, userDto.SessionExpires);
+            return user;
+        }catch (Exception e){
+            return null;
         }
-
-        return response.ToActionResult();
     }
-
-    [HttpGet("{electionId}")]
-    [AllowAnonymous]
-    public Task<IEnumerable<User>> GetAllDelegatesByElection(int electionId)
-    {
-        var response = _repository.GetAllDelegetasByElection(electionId);
-        return response;
-    }
-
-    [HttpGet("/AddMitIDSession/{userId}")]
-    [AllowAnonymous]
-    public RedirectResult AddMitIDSession(int userId)
-    {
-        var response = _repository.AddMidIDSession(userId);
-        return new RedirectResult(url: "http://localhost:3000/", permanent: true, preserveMethod: true);
-
-    }
-
-    [HttpGet("/AddMitIDSession/TimeStamp/{userId}")]
-    [AllowAnonymous]
-    public Task<bool> CheckMitIdTimeStamp(int userId){
-        var response = _repository.CheckMitIDTimeStamp(userId);
-        return response;
-    }
-
 }
