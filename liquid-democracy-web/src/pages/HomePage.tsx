@@ -24,8 +24,8 @@ function HomePage() {
   if (elections != undefined) {
     return (
       <div className="App">
+        <TopBar/>
         <header className="App-header">
-          <TopBar />
           <Grid container spacing={2} className='grid-box'>
             {elections.map((ele) => (
               <Grid item xs={12} sm={6} md={3} key={ele.electionId}>
@@ -61,4 +61,5 @@ function HomePage() {
     );
   }
 }
+
 export default HomePage           

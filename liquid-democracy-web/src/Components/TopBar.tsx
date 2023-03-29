@@ -1,26 +1,20 @@
+import Button from 'react-bootstrap/Button';
 import '../styling/TopBar.css';
 
 export default function TopBar() {
   return (
     <div>
-      <header className="Navbar">
-        <div className="Toolbar">
-          <div className="Logo">
-            {" "}
-            <span role="img" aria-label="logo">
-              🗳️
-            </span>{" "}
-          </div>
-          <div className="Title"> HomePage </div>
-          <div>
-            <button className="top-bar-button" onClick={() => window.location.replace("/CreateElection")}> Create New Election </button>
-          </div>
-          <div>
-            <button className="top-bar-button"> Log Out </button>
-          </div>
+      <div className="Container">
+        <div className='TitleAndButton'>
+          <div className="Title"> Verified Elections</div>
+          <button className="CreateButton" onClick={ () => window.location.href = "/CreateElection"} > Create new election </button>{' '}
         </div>
-      </header>
-      <div className="Toolbar" />
+      </div>
     </div>
   );
 }
+
+
+{/* <div>
+<button className="top-bar-button" onClick={() => window.location.replace("/CreateElection")}> Create New Election </button>
+</div> */}

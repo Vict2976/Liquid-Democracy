@@ -1,34 +1,29 @@
-.Navbar {
-    background-color: lightsteelblue;
-    position: fixed;
-    top: 0;
-    left: auto;
-    right: 0;
-    box-sizing: border-box;
-    font-size: 18px;
-    font-weight: bold;
-    font-family: Roboto;
-    width: 100%;
-    z-index: 1000;
-    box-shadow: 0px 0px 5px silver;
-  }
-  
-.Toolbar {
+.Container {
+  background-image: url('../images/parliment.png');
+  background-repeat: no-repeat;
+  background-size: cover;  position: fixed;
   display: flex;
-  min-height: 56px;
   align-items: center;
-  padding: 0px 10px;
+  justify-content: center;
+  top: 0;
+  right: 0;
+  font-size: 18px;
+  font-family: Roboto;
+  width: 100%;
+  min-height: 400px;
+  box-shadow: 5px 5px 10px silver;
 }
 
-.Logo {
-  margin-right: 10px;
+.TitleAndButton{
+  width: 200px;
+  height: 100px;
 }
 
 .Title {
-  flex-grow: 1;
-}
+  font-weight: bold;
+  padding-bottom: 20px
+;}
 
-.top-bar-button{
-  margin-right: 10px;
+.CreateButton {
+  height: 80%;
 }
-  
