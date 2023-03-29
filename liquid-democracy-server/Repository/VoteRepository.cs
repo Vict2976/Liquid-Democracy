@@ -11,11 +11,12 @@ public class VoteRepository : IVoteRepository
         _context = context;
     }
 
-    public async Task<Vote?> CreateAsync(int userId, int elecitonId){
+    public async Task<Vote?> CreateAsync(int userId, int elecitonId, string documentId){
         var vote = new Vote
             {
                 BelongsToId = userId,
                 ElectionId = elecitonId,
+                DocumentId = documentId
             };
         
         _context.Votes.Add(vote);
@@ -36,6 +37,15 @@ public class VoteRepository : IVoteRepository
         try{ 
              var vote = await _context.Votes.Where(c=> c.BelongsToId==belongsToId && c.ElectionId == elecitonId).FirstAsync();
              return vote;
+        }catch{
+            return null;
+        }
+    }
+
+    public async Task<IEnumerable<Vote?>> ReadFromElectionId(int electionId){
+        try{ 
+            var votes = await _context.Votes.Where(v => v.ElectionId == electionId).ToListAsync();
+             return votes;
         }catch{
             return null;
         }

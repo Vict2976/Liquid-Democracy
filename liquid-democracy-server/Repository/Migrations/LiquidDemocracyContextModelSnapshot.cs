@@ -65,6 +65,9 @@ namespace Repository.Migrations
                     b.Property<bool>("IsEnded")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsEnded")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -81,6 +84,9 @@ namespace Repository.Migrations
 
                     b.Property<string>("Email")
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("LoggedInWithNemId")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Password")
                         .HasColumnType("text");
@@ -103,6 +109,10 @@ namespace Repository.Migrations
 
                     b.Property<int>("BelongsToId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("DocumentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ElectionId")
                         .HasColumnType("integer");

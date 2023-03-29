@@ -63,4 +63,18 @@ public class ElectionRepository : IElectionRepository
             Model = election
         };      
     }
+
+    public async Task<Response<Election>> UpdateElectionRootHash(int electionId, string rootHash)
+    {
+        var election = await GetElectionByIDAsync(electionId);
+        election.RootHash = rootHash;
+        _context.Elections.Update(election);
+        await _context.SaveChangesAsync();
+
+        return new Response<Election>
+        {
+            HTTPResponse = HTTPResponse.Success,
+            Model = election
+        };      
+    }
 }

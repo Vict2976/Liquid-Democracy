@@ -4,7 +4,8 @@ import { ElectionService } from "../services/election.service";
 import { Election, Candidate, User } from "../builder/Interface";
 import {Form, Button, Alert} from 'react-bootstrap';
 import { FinalizeVoteForCandidate, FinalizeVoteForDelegate } from "../fetch";
-import { VoteService } from "../services/vote.service";
+import { UserService } from "../services/user.service";
+import { SigningService } from "../services/signing.service";
 
 
 
@@ -15,7 +16,6 @@ export default function ElectionFunc() {
   const [election, setElection] = useState<Election>();
   const [candidates, setCandidates] = useState<Candidate[]>();
   const [delegates, setDelegates] = useState<User[]>();
-  const voteService = new VoteService()
   const userId = localStorage.getItem("userId")
 
 
@@ -42,13 +42,29 @@ export default function ElectionFunc() {
     });
   },[]);
 
-  function setDataVotingCandidate(candidateId: number )
-  {
-    FinalizeVoteForCandidate(Number(userId), election?.electionId, candidateId);
-  }
-  function setDataVotingDelegate(delegateId: number )
-  {
-    FinalizeVoteForDelegate(Number(userId), election?.electionId, delegateId);
+  function checkLogin(voteForCandidate : boolean, votedForId : number){
+    const userSerivce = new UserService();
+    const signingService = new SigningService()
+
+    let userId = sessionStorage.getItem('userId')
+
+    if (userId == "undefined" || userId == null){
+      alert("You must be logged in to vote")
+      return
+    }
+    userSerivce.CheckIfUserIsLoggedIn(Number (userId)).then((result) => {
+      const isUserLoggedIn = result;
+      if(!isUserLoggedIn){
+        alert("You must be logged in to vote")
+        return
+      }
+    })
+    
+    if (voteForCandidate){
+      signingService.SignVoteForCandidate(Number(userId), election?.electionId, votedForId)
+    }else{
+      signingService.SignVoteForDelegate(Number(userId), election?.electionId, votedForId)
+    }
   }
 
   if (election?.isEnded){
@@ -72,7 +88,7 @@ export default function ElectionFunc() {
         {candidates.map((can) => (
           <ul>
             <li>{can.name}</li>
-            <button onClick={()=> setDataVotingCandidate(can.candidateId)}> Vote For: {can.name}</button>
+            <button onClick={()=> checkLogin(true, can.candidateId)}> Vote For: {can.name}</button>
           </ul>
         ))}
         </div>
@@ -83,7 +99,7 @@ export default function ElectionFunc() {
         {delegates.map((del) => (
           <ul>
             <li>{del.userName}</li>
-            <button onClick={()=> setDataVotingDelegate(del.userId)}>Delegate Vote To: {del.userName}</button>
+            <button onClick={()=> checkLogin(false, del.userId)}>Delegate Vote To: {del.userName}</button>
           </ul>
 
         ))}

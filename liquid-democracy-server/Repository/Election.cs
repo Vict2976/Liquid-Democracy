@@ -10,6 +10,8 @@ public class Election
     public string Description { get; set; }
     public bool IsEnded {get; set;}
     public DateTime CreatedDate { get; set; }
+    public string? RootHash { get; set; }
+
     public ICollection<Candidate> Candidates { get; set; }
     public ICollection<Vote> Votes { get; set; }
 }

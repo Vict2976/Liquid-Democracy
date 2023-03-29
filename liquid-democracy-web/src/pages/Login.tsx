@@ -20,8 +20,8 @@ const Login = () => {
       let promise = userService.Login(username, password);
       promise.catch( () => alert("Wrong credentials"))
       promise.then((response) => {
-        goToHome()
-        localStorage.setItem("userId", response.userId)
+        sessionStorage.setItem("userId", response.userId)
+        userService.AddMitIdSession(response.userId);
       })
   };
 
