@@ -16,6 +16,8 @@ public class VoteController : ControllerBase
     [AllowAnonymous]
     [HttpPost]
     [ProducesResponseType(typeof(Vote), 201)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(400)]
     public async Task<ActionResult<Vote?>> Post([FromBody] VoteDTO voteDTO)
     {
         var checkForVote = _repository.checkForExistingVote(voteDTO.userId, voteDTO.electionId);
@@ -26,21 +28,40 @@ public class VoteController : ControllerBase
         }
 
         var response = await _repository.CreateAsync(voteDTO.userId, voteDTO.electionId, voteDTO.documentId);
+        if (response == null)
+        {
+            return BadRequest();
+        }
         return response;
     }
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<IEnumerable<Vote?>> Get(){
-        var votes = await _repository.ReadAllAsync();
-        return votes;
+    [ProducesResponseType(typeof(Vote), 200)]
+    [ProducesResponseType(400)]
+    public async Task<ActionResult<IEnumerable<Vote?>>> Get()
+    {
+        var response = await _repository.ReadAllAsync();
+        if (response == null)
+        {
+            return BadRequest();
+        }
+        return response.ToList();
     }
 
     [AllowAnonymous]
     [Route("/countVoters/{electionId}")]
     [HttpGet]
-    public async Task<int> GetAmountOfVoters(int electionId){
-        var votes = await _repository.ReadFromElectionId(electionId);
-        return votes.Count();
+    [ProducesResponseType(typeof(int), 200)]
+    [ProducesResponseType(400)]
+    public async Task<ActionResult<int>> GetAmountOfVoters(int electionId)
+    {
+        var response = await _repository.ReadFromElectionId(electionId);
+
+        if (response == null)
+        {
+            return BadRequest();
+        }
+        return response.ToList().Count();
     }
 }

@@ -1,49 +1,38 @@
 import { useState, useEffect } from "react";
-import { Link, Navigate, To, useLocation } from "react-router-dom";
 import { ElectionService } from "../services/election.service";
-import { Election, Candidate, User } from "../builder/Interface";
-import {Form, Button, Alert} from 'react-bootstrap';
-import { FinalizeVoteForCandidate, FinalizeVoteForDelegate } from "../fetch";
-import { UserService } from "../services/user.service";
-import { SigningService } from "../services/signing.service";
-import ReactDOM from "react-dom";
+import { Election } from "../builder/Interface";
+import { AuthenticateService } from "../services/authenticate.service";
 
 
 function GoToSigning() {
   const url = window.location.href;
   const parts = url.split("/");
   const currentElection = parts[parts.length - 1];
-  const userService = new UserService();
-  const data = userService.Authenticate(Number (currentElection)).then((response) => response)
+  const authenticateService = new AuthenticateService();
+  const data = authenticateService.Authenticate(Number(currentElection)).then((response) => response)
   return data
 }
 
-
 export default function ElectionDescription() {
+  const electionService = new ElectionService();
 
   const url = window.location.href;
   const parts = url.split("/");
   const currentElection = parts[parts.length - 1];
 
-  const electionService = new ElectionService();
-
   const [election, setElection] = useState<Election>();
-  const [goToUrl, setGoToUrl] = useState("");
-
-
-  
 
   useEffect(() => {
-    electionService.GetElectionFromId(Number (currentElection)).then((messages) => {
+    electionService.GetElectionFromId(Number(currentElection)).then((messages) => {
       setElection(messages);
     });
   }, []);
 
-  if (election?.isEnded){
-    return(
+  if (election?.isEnded) {
+    return (
       <h1>Election has ended</h1>
     )
-  }else{
+  } else {
     return (
       <view>
         <ul>
@@ -53,11 +42,10 @@ export default function ElectionDescription() {
         </ul>
 
         <div>
-        <button
-            onClick={ () => 
-              {GoToSigning()}  }>
-          Vote for this electiom
-        </button>
+          <button
+            onClick={() => { GoToSigning() }}>
+            Vote for this electiom
+          </button>
         </div>
       </view>
     );

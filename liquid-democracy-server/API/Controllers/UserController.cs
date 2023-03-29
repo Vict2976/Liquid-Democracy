@@ -19,39 +19,71 @@ public class UserController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<IEnumerable<User>> Get(){
-        var users = await _repository.ReadAllAsync();
-        return users;
+    [ProducesResponseType(typeof(User), 200)]
+    [ProducesResponseType(400)]
+    public async Task<ActionResult<IEnumerable<User>>> Get()
+    {
+        var response = await _repository.ReadAllAsync();
+        if (response == null)
+        {
+            return BadRequest();
+        }
+        return response.ToList();
     }
 
     [AllowAnonymous]
     [HttpPost]
-    public async Task<User> CreateUser([FromBody] UserDTO userDto){
-        var user = await _repository.Create(userDto.ProiverId, userDto.SessionExpires);
-        return user;
+    [ProducesResponseType(typeof(User), 201)]
+    [ProducesResponseType(400)]
+    public async Task<ActionResult<User>> CreateUser([FromBody] UserDTO userDto)
+    {
+        var response = await _repository.Create(userDto.ProiverId, userDto.SessionExpires);
+        if (response == null)
+        {
+            return BadRequest();
+        }
+        return response;
     }
 
     [AllowAnonymous]
     [HttpGet]
-    [Route("/GetUser/{providerId}")]  
-    public async Task<User?> GetUser(string providerId){
-        try {
-            var user = await _repository.GetByProiverId(providerId);
-            return user;
-        }catch (Exception e){
-            return null;
+    [Route("/GetUser/{providerId}")]
+    [ProducesResponseType(typeof(User), 200)]
+    [ProducesResponseType(400)]
+    public async Task<ActionResult<User>> GetUser(string providerId)
+    {
+        try
+        {
+            var response = await _repository.GetByProiverId(providerId);
+            if (response == null)
+            {
+                return BadRequest();
+            }
+            return response;
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
         }
     }
 
     [AllowAnonymous]
     [HttpPut]
-    [Route("/UpdateSession")]  
-    public async Task<User?> UpdateSession([FromBody] UserDTO userDto){
-        try {
-            var user = await _repository.UpdateSessionTime(userDto.ProiverId, userDto.SessionExpires);
-            return user;
-        }catch (Exception e){
-            return null;
+    [Route("/UpdateSession")]
+    public async Task<ActionResult<User?>> UpdateSession([FromBody] UserDTO userDto)
+    {
+        try
+        {
+            var response = await _repository.UpdateSessionTime(userDto.ProiverId, userDto.SessionExpires);
+            if (response == null)
+            {
+                return BadRequest();
+            }
+            return response;
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
         }
     }
 }
