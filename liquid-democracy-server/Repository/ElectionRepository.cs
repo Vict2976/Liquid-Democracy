@@ -30,8 +30,6 @@ public class ElectionRepository : IElectionRepository
         foreach (var candidate in candidates){
             await _candidateRepository.CreateAsync(candidate, election.ElectionId);
         }
-        
-
 
         return election;
     }

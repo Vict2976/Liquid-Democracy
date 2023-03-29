@@ -73,9 +73,9 @@ public class SignatureController : ControllerBase
     }
     
     [AllowAnonymous]
-    [Route("/Sign/Candidate/{userId}/{electionId}/{candidateId}")]
+    [Route("/Sign/Candidate/{providerId}/{electionId}/{candidateId}")]
     [HttpGet]
-    public async Task<ActionResult> CreateCandidateSign(int userId, int electionId, int? candidateId)
+    public async Task<ActionResult> CreateCandidateSign(string providerId, int electionId, int? candidateId)
     {
 
     var clientId = _config["Signicat:ClientId"];
@@ -173,7 +173,7 @@ public class SignatureController : ControllerBase
             RedirectMode = RedirectMode.Redirect,
             Error = "https://www.google.com/",
             Cancel = "https://www.google.com/",
-            Success = $"https://localhost:7236/ForCandidate/{userId}/{electionId}/{candidateId}/{res.DocumentId}",
+            Success = $"https://localhost:7236/ForCandidate/{providerId}/{electionId}/{candidateId}/{res.DocumentId}",
         },
         SignatureType = new SignatureType()
         {
@@ -195,129 +195,4 @@ public class SignatureController : ControllerBase
     Response.Headers.Add("Location", res.Signers[0].Url);
     return new StatusCodeResult(303);
     }
-
-    [AllowAnonymous]
-    [Route("/Sign/Delegate/{userId}/{electionId}/{delegateId}")]
-    [HttpGet]
-    public async Task<ActionResult> CreateDelegateSign(int userId, int electionId, int delegateId)
-    {
-
-    var clientId = _config["Signicat:ClientId"];
-    var clientSecret = _config["Signicat:ClientSecret"];
-    var scopes = new[] {OAuthScope.DocumentWrite, OAuthScope.DocumentRead, OAuthScope.DocumentFile};
-    var _signatureService = new SignatureService(clientId, clientSecret, scopes);
-
-    // Get local file to be signed
-    var filePath = Path.Combine("Vote.pdf");
-    var data = await System.IO.File.ReadAllBytesAsync(filePath);
-
-    // Configure the signing settings
-    var options = new DocumentCreateOptions()
-    {
-        Title = "Ballot",
-
-        // Set the redirect and eID-methods
-        Signers = new List<SignerOptions>()
-        {
-            new SignerOptions()
-            {
-                RedirectSettings = new RedirectSettings()
-                {
-                    RedirectMode = RedirectMode.Redirect,
-                    Error = "https://www.google.com/",
-                    Cancel = "https://www.google.com/",
-                    Success = "https://www.facebook.com/",
-                },
-                SignatureType = new SignatureType()
-                {
-                    Mechanism = SignatureMechanism.Identification,
-                    SignatureMethods = new List<SignatureMethod>()
-                    {
-                        SignatureMethod.Mitid,
-                    }
-
-                },
-                ExternalSignerId = Guid.NewGuid().ToString(),
-            }
-        },
-        ContactDetails = new ContactDetails()
-        {
-            Email = "your@company.com"
-        },
-
-        // Reference for internal use 
-        ExternalId = Guid.NewGuid().ToString(),
-
-        // Optional: Notifications for signers. See API for details
-        Notification = new Notification()
-        {
-            SignRequest = new SignRequest()
-            {
-                Email = new List<Email>()
-                {
-                    new Email()
-                    {
-                        Language = Language.DA,
-                        Subject = "Subject text",
-                        Text = "The text of the email",
-                        SenderName = "Senders Name"
-                    }
-                }
-            }
-        },
-
-        // Optional: Retrieve social security number of signer(s)
-        Advanced = new Advanced()
-        {
-            GetSocialSecurityNumber = true,
-        },
-
-        // The document to be signed and format
-        DataToSign = new DataToSign()
-        {
-            FileName = "Ballot.pdf",
-            Base64Content = Convert.ToBase64String(data),
-            Packaging = new Packaging()
-            {
-                SignaturePackageFormats = new List<SignaturePackageFormat>
-                {
-                    SignaturePackageFormat.Pades
-                }
-            }
-        }
-    };
-
-    // Create document with the settings specified
-    var res = await _signatureService.CreateDocumentAsync(options);
-
-    var newSigners = new SignerOptions()
-    {
-        RedirectSettings = new RedirectSettings()
-        {
-            RedirectMode = RedirectMode.Redirect,
-            Error = "https://www.google.com/",
-            Cancel = "https://www.google.com/",
-            Success = $"https://localhost:7236/ForDelegate/{userId}/{electionId}/{delegateId}/{res.DocumentId}",
-        },
-        SignatureType = new SignatureType()
-        {
-            Mechanism = SignatureMechanism.Identification,
-            SignatureMethods = new List<SignatureMethod>()
-            {
-                SignatureMethod.Mitid,
-            }
-        },
-        ExternalSignerId = Guid.NewGuid().ToString(),
-    };
-
-    var test = res.Signers.FirstOrDefault().Id;
-
-    await _signatureService.UpdateSignerAsync(res.DocumentId, test, newSigners);
-    Console.WriteLine(res.DocumentId);
-
-    // Redirect user to the URL retrieved from the SDK
-    Response.Headers.Add("Location", res.Signers[0].Url);
-    return new StatusCodeResult(303);
-    }
-
 }

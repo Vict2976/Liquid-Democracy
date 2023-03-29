@@ -9,11 +9,13 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import '../styling/HomePage.css';
 import TopBar from '../Components/TopBar';
+import { UserService } from '../services/user.service';
 
 function HomePage() {
   const [elections, setElections] = useState<Election[]>();
 
   const appService = new AppService();
+  const userService = new UserService()
 
   useEffect(() => {
       appService.getAllElections().then((response) => {
@@ -40,9 +42,9 @@ function HomePage() {
                   </Typography>
                 </CardContent>
                 <CardActions>
-                  <Link to = "/Election" state={ele.electionId} onClick={()=> console.log(ele)}>
-                      See Election
-                  </Link>
+                  <p>
+                      <a href={"/Election/" + ele.electionId}> Hallo </a>
+                  </p>
                   <Typography >
                     {ele.createdDate}
                   </Typography>
