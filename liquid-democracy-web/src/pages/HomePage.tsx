@@ -42,9 +42,9 @@ function HomePage() {
                   </Typography>
                 </CardContent>
                 <CardActions>
-                  <Link to = "/ElectionDescription" state={ele.electionId} onClick={()=> console.log(ele)}>
-                      See Election
-                  </Link>
+                  <p>
+                      <a href={"/Election/" + ele.electionId}> Hallo </a>
+                  </p>
                   <Typography >
                     {ele.createdDate}
                   </Typography>

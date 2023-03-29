@@ -33,8 +33,8 @@ namespace Server
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("/MitId/Auth")]  
-        public Task<IdSession>? AuthenticateUserWithMitId()
+        [Route("/MitId/Auth/{electionId}")]  
+        public Task<IdSession>? AuthenticateUserWithMitId(int electionId)
         {
             //private readonly IIdentificationV2Service client;
 
@@ -57,9 +57,9 @@ namespace Server
                 },
                 RedirectSettings = new RedirectSettings()
                 {
-                    ErrorUrl = "https://www.google.com/search?q=Error&rlz=1C5CHFA_enDK994DK994&ei=9oLyY6DuLJCUrwSAnY24BA&ved=0ahUKEwigweX2sqL9AhUQyosKHYBOA0cQ4dUDCA8&uact=5&oq=Error&gs_lcp=Cgxnd3Mtd2l6LXNlcnAQAzIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQyBQgAEIAEMgUIABCABDIFCAAQgAQ6CggAEEcQ1gQQsAM6BwgAELADEEM6BwguELADEEM6DQgAEOQCENYEELADGAE6DAguEMgDELADEEMYAjoECC4QQzoLCAAQgAQQsQMQgwE6CAgAEIAEELEDOgUILhCABDoICC4QsQMQgwE6CAgAELEDEIMBOgQIABBDOggILhCABBCxAzoLCC4QgAQQsQMQgwE6CAguEIAEENQCSgQIQRgAUJAOWLYSYKYXaAVwAXgAgAFLiAG7ApIBATWYAQCgAQHIARPAAQHaAQYIARABGAnaAQYIAhABGAg&sclient=gws-wiz-serp",
+                    ErrorUrl = "https://www.google.com/search?q=error&oq=error&aqs=chrome..69i57j35i39l2j0i512l2j69i60l3.1236j0j4&sourceid=chrome&ie=UTF-8",
                     AbortUrl = "https://www.signicat.com#abort",
-                    SuccessUrl = "https://localhost:3000/" 
+                    SuccessUrl = "http://localhost:3000/Election/sign/" + electionId 
                 },
                 ExternalReference = Guid.NewGuid().ToString("n"),
                 Flow = IdSessionFlow.Redirect,

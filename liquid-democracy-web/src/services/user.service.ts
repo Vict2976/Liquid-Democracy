@@ -3,10 +3,10 @@ import axios, { AxiosRequestConfig } from 'axios';
 export class UserService {
 
 
-  public async CreateUser(){
+  public async Authenticate(electionId : number) : Promise<any> {
     const sessionId = sessionStorage.getItem("sessionId")
     if (sessionId == "" || sessionId == undefined){
-      this.ExecuteMitIdSession()
+      this.ExecuteMitIdSession(electionId)
     }else{
       this.GetSessionInformation(String(sessionId)).then((sessionResponse) => {
         const status = sessionResponse.status
@@ -17,25 +17,29 @@ export class UserService {
           this.UserExists(providerId).then((userResponse) => {
             console.log(userResponse)
             if(userResponse == 204){
-              this.Register(providerId, sessionExpires)
-              alert("User has been created - yay")
+              this.Register(providerId, sessionExpires).then((registerResponse) => {
+                console.log(registerResponse)
+                return registerResponse
+              })
             }else{
-              alert("User exists - check for vote")
+              console.log(userResponse)
+              return (userResponse)
             }
           })          
         }else{
           alert("Your Sessions is not succesfull")
+          return sessionResponse
         }
       });
     }
   }
 
 
-  public async ExecuteMitIdSession() : Promise<any> { 
+  public async ExecuteMitIdSession(electionId : number) : Promise<any> { 
     const config: AxiosRequestConfig = {
       method: 'get',
     maxBodyLength: Infinity,
-      url: 'https://localhost:7236/MitId/Auth',
+      url: 'https://localhost:7236/MitId/Auth/' + electionId,
       headers: { 
         'Content-Type': 'application/json'
       },

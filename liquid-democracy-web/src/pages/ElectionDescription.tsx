@@ -9,23 +9,32 @@ import { SigningService } from "../services/signing.service";
 import ReactDOM from "react-dom";
 
 
-function GoToSigning(){
+function GoToSigning() {
+  const url = window.location.href;
+  const parts = url.split("/");
+  const currentElection = parts[parts.length - 1];
   const userService = new UserService();
-  userService.CreateUser()
+  const data = userService.Authenticate(Number (currentElection)).then((response) => response)
+  return data
 }
 
 
 export default function ElectionDescription() {
 
+  const url = window.location.href;
+  const parts = url.split("/");
+  const currentElection = parts[parts.length - 1];
+
   const electionService = new ElectionService();
 
   const [election, setElection] = useState<Election>();
+  const [goToUrl, setGoToUrl] = useState("");
 
-  let { state } = useLocation();
-  let id = Number(state);
+
+  
 
   useEffect(() => {
-    electionService.GetElectionFromId(id).then((messages) => {
+    electionService.GetElectionFromId(Number (currentElection)).then((messages) => {
       setElection(messages);
     });
   }, []);
@@ -44,10 +53,11 @@ export default function ElectionDescription() {
         </ul>
 
         <div>
-        <button onClick={ () => GoToSigning() }> Sign in with MitID</button>
-        <Link to = "/Election" state={id} onClick={()=> console.log(id)}>
-                      See Election
-        </Link>
+        <button
+            onClick={ () => 
+              {GoToSigning()}  }>
+          Vote for this electiom
+        </button>
         </div>
       </view>
     );

@@ -73,9 +73,9 @@ public class SignatureController : ControllerBase
     }
     
     [AllowAnonymous]
-    [Route("/Sign/Candidate/{userId}/{electionId}/{candidateId}")]
+    [Route("/Sign/Candidate/{providerId}/{electionId}/{candidateId}")]
     [HttpGet]
-    public async Task<ActionResult> CreateCandidateSign(int userId, int electionId, int? candidateId)
+    public async Task<ActionResult> CreateCandidateSign(string providerId, int electionId, int? candidateId)
     {
 
     var clientId = _config["Signicat:ClientId"];
@@ -173,7 +173,7 @@ public class SignatureController : ControllerBase
             RedirectMode = RedirectMode.Redirect,
             Error = "https://www.google.com/",
             Cancel = "https://www.google.com/",
-            Success = $"https://localhost:7236/ForCandidate/{userId}/{electionId}/{candidateId}/{res.DocumentId}",
+            Success = $"https://localhost:7236/ForCandidate/{providerId}/{electionId}/{candidateId}/{res.DocumentId}",
         },
         SignatureType = new SignatureType()
         {

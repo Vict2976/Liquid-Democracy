@@ -45,8 +45,8 @@ public class UserRepository : IUserRepository
         return users;
     }
 
-    public async Task<User> GetByProiverId(string providerId){
-        var user = _context.Users.Where(u => u.ProivderId == providerId).Select(u => u).First();
+    public async Task<User?> GetByProiverId(string providerId){
+        var user = _context.Users.Where(u => u.ProivderId == providerId).Select(u => u).FirstOrDefault();
 
         if (user == null)
         {
