@@ -17,31 +17,56 @@ public class ElectionController : ControllerBase
     [AllowAnonymous]
     [HttpPost]
     [ProducesResponseType(typeof(Election), 201)]
+    [ProducesResponseType(400)]
     public async Task<ActionResult<Election?>> Post([FromBody] CreateElectionDTO createElectionDTO)
     {
         var response = await _repository.CreateAsync(createElectionDTO.Name, createElectionDTO.Description, createElectionDTO.CreatedDate, createElectionDTO.Candidates);
+        if (response == null)
+        {
+            return BadRequest();
+        }
         return response;
     }
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<IEnumerable<Election?>> Get(){
-        var elections = await _repository.ReadAllAsync();
-        return elections;
+    [ProducesResponseType(typeof(IEnumerable<Election>), 200)]
+    [ProducesResponseType(400)]
+    public async Task<ActionResult<IEnumerable<Election?>>> Get()
+    {
+        var response = await _repository.ReadAllAsync();
+        if (response == null)
+        {
+            return BadRequest();
+        }
+        return response.ToList();
     }
 
     [AllowAnonymous]
-    [HttpGet ("{electionId}")]
-    public async Task<Election?> GetElectionByID(int electionId){
-        var election = await _repository.GetElectionByIDAsync(electionId);
-        return election;
-    }
-
-    [AllowAnonymous]
-    [HttpPut ("{electionId}")]
-    public async Task<Response> CloseElection(int electionId){
-        var response = await _repository.CloseElection(electionId);
+    [HttpGet("{electionId}")]
+    [ProducesResponseType(typeof(Election), 200)]
+    [ProducesResponseType(400)]
+    public async Task<ActionResult<Election?>> GetElectionByID(int electionId)
+    {
+        var response = await _repository.GetElectionByIDAsync(electionId);
+        if (response == null)
+        {
+            return BadRequest();
+        }
         return response;
     }
 
+    [AllowAnonymous]
+    [HttpPut("{electionId}")]
+    [ProducesResponseType(typeof(Election), 200)]
+    [ProducesResponseType(400)]
+    public async Task<ActionResult<Response>> CloseElection(int electionId)
+    {
+        var response = await _repository.CloseElection(electionId);
+        if (response == null)
+        {
+            return BadRequest();
+        }
+        return response;
+    }
 }

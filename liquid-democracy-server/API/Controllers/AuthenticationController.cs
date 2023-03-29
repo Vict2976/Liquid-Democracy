@@ -1,20 +1,8 @@
-using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Idfy;
 using Idfy.IdentificationV2;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
-using Core;
 
 namespace Server
 {
@@ -24,7 +12,7 @@ namespace Server
     public class AuthenticationApiController : Controller
     {
 
-    private readonly IConfiguration _config;
+        private readonly IConfiguration _config;
 
         public AuthenticationApiController(IConfiguration config)
         {
@@ -33,20 +21,17 @@ namespace Server
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("/MitId/Auth/{electionId}")]  
+        [Route("/MitId/Auth/{electionId}")]
         public Task<IdSession>? AuthenticateUserWithMitId(int electionId)
         {
-            //private readonly IIdentificationV2Service client;
 
             var moviesApiKey = _config["Signicat:ClientId"];
             var moviesApiKey1 = _config["Signicat:ClientSecret"];
-            var client = new IdentificationV2Service(moviesApiKey, moviesApiKey1, 
+            var client = new IdentificationV2Service(moviesApiKey, moviesApiKey1,
             new List<OAuthScope>()
             {
                 OAuthScope.Identify
             });
-            //Console.WriteLine(client);
-            //return client;
 
             var session = client.CreateSessionAsync(new IdSessionCreateOptions()
             {
@@ -59,7 +44,7 @@ namespace Server
                 {
                     ErrorUrl = "https://www.google.com/search?q=error&oq=error&aqs=chrome..69i57j35i39l2j0i512l2j69i60l3.1236j0j4&sourceid=chrome&ie=UTF-8",
                     AbortUrl = "https://www.signicat.com#abort",
-                    SuccessUrl = "http://localhost:3000/Election/sign/" + electionId 
+                    SuccessUrl = "http://localhost:3000/Election/sign/" + electionId
                 },
                 ExternalReference = Guid.NewGuid().ToString("n"),
                 Flow = IdSessionFlow.Redirect,
@@ -75,14 +60,15 @@ namespace Server
                     ThemeMode = ThemeMode.Dark
                 },
             });
-            
-            return session; 
+
+            return session;
         }
 
         [AllowAnonymous]
         [HttpGet]
-        [Route("/MitId/Session/{sessionId}")]  
-        public async Task<SessionInformation> GetSessionInformation(string sessionId){
+        [Route("/MitId/Session/{sessionId}")]
+        public async Task<SessionInformation> GetSessionInformation(string sessionId)
+        {
             var token = await GetToken();
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Get, "https://api.idfy.io/identification/v2/sessions/" + sessionId);
@@ -94,11 +80,12 @@ namespace Server
             return sessionInformation;
         }
 
-        private async Task<string> GetToken(){
+        private async Task<string> GetToken()
+        {
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, "https://api.signicat.io/oauth/connect/token");
             var clientCredentials = _config["Signicat:ClientCredentials"];
-            request.Headers.Add("Authorization", clientCredentials);        
+            request.Headers.Add("Authorization", clientCredentials);
             var collection = new List<KeyValuePair<string, string>>();
             collection.Add(new("grant_type", "client_credentials"));
             var content = new FormUrlEncodedContent(collection);

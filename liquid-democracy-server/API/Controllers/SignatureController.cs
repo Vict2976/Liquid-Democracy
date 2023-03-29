@@ -22,6 +22,7 @@ public class SignatureController : ControllerBase
     [AllowAnonymous]
     [Route("/Verify/{electionId}")]
     [HttpGet]
+    [ProducesResponseType(typeof(Election), 200)]
     public async Task<bool> VerifyElection(int electionId){
         var allvotes = await _repository.ReadFromElectionId(electionId);
         foreach(var vote in allvotes){
@@ -189,8 +190,6 @@ public class SignatureController : ControllerBase
     var test = res.Signers.FirstOrDefault().Id;
 
     await _signatureService.UpdateSignerAsync(res.DocumentId, test, newSigners);
-    Console.WriteLine(res.DocumentId);
-
     // Redirect user to the URL retrieved from the SDK
     Response.Headers.Add("Location", res.Signers[0].Url);
     return new StatusCodeResult(303);
