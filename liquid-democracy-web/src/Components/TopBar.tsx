@@ -3,12 +3,10 @@ import '../styling/TopBar.css';
 
 export default function TopBar() {
   return (
-    <div>
-      <div className="Container">
-        <div className='TitleAndButton'>
-          <div className="Title"> Verified Elections</div>
-          <button className="CreateButton" onClick={ () => window.location.href = "/CreateElection"} > Create new election </button>{' '}
-        </div>
+    <div className="Container">
+      <div className='TitleAndButton'>
+        <div className="Title"> Verified Elections</div>
+        <button className="TopButton" onClick={() => window.location.href = "/CreateElection"}><span>Create new election</span><i></i></button>
       </div>
     </div>
   );

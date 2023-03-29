@@ -1,3 +1,7 @@
+.Home-page-container {
+  height: auto;
+}
+
 .card-box {
     display: flex;
     justify-content: space-between;
@@ -13,7 +17,8 @@
     align-items: flex-start;
     padding: 3%;
     position: fixed;
-    top: 45%;
+    top: 52%;
+    overflow: auto;
     height: calc(100% - 400px); /* Set the height of the .grid-box container to the height of the viewport minus the height of the TopBar component */
 }
 
@@ -24,13 +29,4 @@
 
 .single-card{
   width: 100%;
-}
-
-html, body {
-  height: 100%;
-  overflow: auto !important;
-}
-
-.App {
-  height: 100%;
 }

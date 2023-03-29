@@ -23,9 +23,8 @@ function HomePage() {
 
   if (elections != undefined) {
     return (
-      <div className="App">
+      <div className="Home-page-container">
         <TopBar/>
-        <header className="App-header">
           <Grid container spacing={2} className='grid-box'>
             {elections.map((ele) => (
               <Grid item xs={12} sm={6} md={3} key={ele.electionId}>
@@ -50,7 +49,6 @@ function HomePage() {
               </Grid>
             ))}
           </Grid>
-        </header>
       </div>
     );
   } else {
