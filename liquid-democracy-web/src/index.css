@@ -1,0 +1,12 @@
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+	font-family: Big Caslon,Book Antiqua,Palatino Linotype,Georgia,serif; 
+}
+
+code {
+	font-family: Big Caslon,Book Antiqua,Palatino Linotype,Georgia,serif; 
+}
