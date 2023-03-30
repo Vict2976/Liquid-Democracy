@@ -1,3 +1,7 @@
+.Home-page-container {
+  height: auto;
+}
+
 .card-box {
     display: flex;
     justify-content: space-between;
@@ -12,9 +16,46 @@
     justify-content: flex-start;
     align-items: flex-start;
     padding: 3%;
+    position: fixed;
+    top: 52%;
+    overflow: auto;
+    height: calc(100% - 400px); /* Set the height of the .grid-box container to the height of the viewport minus the height of the TopBar component */
 }
 
-body {
+.body {
     background-color: white;
     font-family: Roboto;
   }
+
+.single-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.single-card:hover {
+  box-shadow: 5px 5px 10px silver;
+}
+
+.card-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 150px; /* adjust as needed */
+}
+
+.card-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height:fit-content; /* adjust as needed */
+  margin-top: 15px;
+}
+
+.card-date {
+  font-size: 14px;
+  color: #666;
+  margin-top: 5px;
+}

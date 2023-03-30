@@ -1,0 +1,71 @@
+.Top-bar-container {
+    background-color: #008567;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    right: 0;
+    font-size: 18px;
+    font-family: Roboto;
+    width: 100%;
+    min-height: 300px;
+    box-shadow: 5px 5px 10px silver;
+}
+
+.Title {
+    font-weight: bold;
+    color: aliceblue;
+    font-size: 30px;
+    padding-bottom: 20px;
+    font-family: Big Caslon,Book Antiqua,Palatino Linotype,Georgia,serif; 
+}
+
+.Description-container {
+    position: fixed;
+    top: 38%;
+    padding-left: 2%;
+    max-width: 50%;
+}
+
+.Body-container {
+    display: flex;
+    flex-direction: column;
+    direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 3%;
+    position: fixed;
+    width: 100%;
+    top: 45%;
+    height: calc(100% - 400px);
+}
+
+.Candidates-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.Candidates-container ul {
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+.Sign-button {
+    transition-duration: 0.4s;
+    font-size: small;
+    height: fit-content;
+    width: fit-content;
+    background-color: #008567; /* Green */
+    color: white;
+	font-family: Big Caslon,Book Antiqua,Palatino Linotype,Georgia,serif; 
+  }
+  
+.Sign-button:hover {
+    background-color: white; /* Green */
+    color: #008567;
+}

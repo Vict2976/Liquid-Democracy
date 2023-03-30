@@ -1,34 +1,132 @@
-.Navbar {
-    background-color: lightsteelblue;
-    position: fixed;
-    top: 0;
-    left: auto;
-    right: 0;
-    box-sizing: border-box;
-    font-size: 18px;
-    font-weight: bold;
-    font-family: Roboto;
-    width: 100%;
-    z-index: 1000;
-    box-shadow: 0px 0px 5px silver;
-  }
-  
-.Toolbar {
+.Container {
+  background-color: #008567;
+  background-repeat: no-repeat;
+  background-size: cover;  position: fixed;
   display: flex;
-  min-height: 56px;
   align-items: center;
-  padding: 0px 10px;
+  justify-content: center;
+  top: 0;
+  right: 0;
+  font-size: 18px;
+  font-family: Roboto;
+  width: 100%;
+  min-height: 400px;
+  box-shadow: 5px 5px 10px silver;
 }
 
-.Logo {
-  margin-right: 10px;
+.TitleAndButton{
+  position: relative;
+  width: 250px;
+  height: 100px;
 }
 
 .Title {
-  flex-grow: 1;
+  font-weight: bold;
+  color: aliceblue;
+  font-size: 30px;
+  padding-bottom: 20px;
+  font-family: Big Caslon,Book Antiqua,Palatino Linotype,Georgia,serif; 
 }
 
-.top-bar-button{
-  margin-right: 10px;
+.TopButton {
+  position: relative;
+  background: #444;
+  color: #fff;
+  text-decoration: none;
+  text-transform: uppercase;
+  border: none;
+  letter-spacing: 0.1rem;
+  font-size: 1rem;
+  padding: 1rem 3rem;
+  transition: 0.2s;
+  font-family: Big Caslon,Book Antiqua,Palatino Linotype,Georgia,serif; 
 }
-  
+
+.TopButton:hover {
+  letter-spacing: 0.2rem;
+  padding: 1.1rem 3.1rem;
+  background: var(#0FF0FC);
+  color: var(#0FF0FC);
+  /* box-shadow: 0 0 35px var(--clr); */
+  animation: box 3s infinite;
+}
+
+.TopButton::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  background: #272822;
+}
+
+.TopButton span {
+  position: relative;
+  z-index: 1;
+}
+.TopButton i {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.TopButton i::before {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 2px;
+  left: 80%;
+  top: -2px;
+  border: 2px solid var(#0FF0FC);
+  background: #0FF0FC;
+  transition: 0.2s;
+}
+
+.TopButton:hover i::before {
+  width: 15px;
+  left: 20%;
+  animation: move 3s infinite;
+}
+
+.TopButton i::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 2px;
+  left: 20%;
+  bottom: -2px;
+  border: 2px solid var(#0FF0FC);
+  background: #0FF0FC;
+  transition: 0.2s;
+}
+
+.TopButton:hover i::after {
+  width: 15px;
+  left: 80%;
+  animation: move 3s infinite;
+}
+
+@keyframes move {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes box {
+  0% {
+    box-shadow: #27272c;
+  }
+  50% {
+    box-shadow: 0 0 25px var(#0FF0FC);
+  }
+  100% {
+    box-shadow: #27272c;
+  }
+}
+
+
+

@@ -1,0 +1,47 @@
+.Title-Description{
+    font-weight: bold;
+    color: white;
+    font-family: Big Caslon,Book Antiqua,Palatino Linotype,Georgia,serif; 
+    font-size: 30px;
+    padding-bottom: 20px;
+}
+
+.Body-container-Description{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 3%;
+    position: fixed;
+    overflow: auto;  
+    top: 40%  
+}
+
+.Inner-container-info-Description{
+    width: 30%;
+    padding-right: 20%;
+}
+
+.Inner-container-Description{
+    width: 50%;
+    padding-right: 20px;
+}
+
+.Lower-title-Description{
+    font-weight: bold;
+}
+
+.Vote-button-Description {
+    font-family: Big Caslon,Book Antiqua,Palatino Linotype,Georgia,serif; 
+    transition-duration: 0.4s;
+    font-size: x-large; 
+    height: 100px;
+    width: fit-content;
+    background-color: #008567;
+    color: white;
+}
+
+.Vote-button-Description:hover {
+    background-color: white;
+    color: #008567;
+}
