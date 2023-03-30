@@ -1,19 +1,19 @@
 import { Component } from 'react';
 import { Election } from '../builder/Interface';
 import { AdminService } from '../services/admin.service';
-import { AppService } from '../services/app.service';
 import { CandidateService } from '../services/candidate.service';
+import { ElectionService } from '../services/election.service';
 import { VoteService } from '../services/vote.service';
 import '../styling/HomePage.css';
 
-interface AdminProps {}
+interface AdminProps { }
 
 interface AdminState {
   elections: Election[] | undefined;
 }
 
 class Admin extends Component<AdminProps, AdminState> {
-  appService = new AppService();
+  electionService = new ElectionService();
   adminService = new AdminService();
   candidateService = new CandidateService();
   voteService = new VoteService();
@@ -25,39 +25,39 @@ class Admin extends Component<AdminProps, AdminState> {
     };
   }
 
-  VerifyElection = async (electionId : number) => {
-    const isVerified = this.adminService.VerifyElection(electionId).then((response) => 
+  VerifyElection = async (electionId: number) => {
+    const isVerified = this.adminService.VerifyElection(electionId).then((response) =>
       response
     )
-    if (await isVerified){
+    if (await isVerified) {
       alert("This election is Verified, you can close it!")
-    }else{
+    } else {
       alert("This elction has been tampered with!!")
     }
   }
 
-  FindElectionWinner = async (electionId : number ) =>{
-    const candidateWinnder =  this.candidateService.FindCandidateWinner(electionId).then((response) => response)
-    alert (await candidateWinnder)
+  FindElectionWinner = async (electionId: number) => {
+    const candidateWinnder = this.candidateService.FindCandidateWinner(electionId).then((response) => response)
+    alert(await candidateWinnder)
   }
 
-  VerifyAmountOfVotesInSystem = async (electionId : number) => {
-    const candidateVotes =  this.candidateService.CountVotesForCandidates(electionId).then((response) => response);
+  VerifyAmountOfVotesInSystem = async (electionId: number) => {
+    const candidateVotes = this.candidateService.CountVotesForCandidates(electionId).then((response) => response);
     const amountOfVotes = this.voteService.CountAllVotesForElection(electionId).then((response) => response);
-    if (await candidateVotes == await amountOfVotes){
+    if (await candidateVotes == await amountOfVotes) {
       alert("This election is has correct votes, you can close it!")
-    }else{
+    } else {
       alert("This elction has been tampered with!!")
     }
   }
 
-  VerifyRootHash = async (electionId : number) => {
-    const isVerified = this.adminService.VerifyRootHash(electionId).then((response) => 
+  VerifyRootHash = async (electionId: number) => {
+    const isVerified = this.adminService.VerifyRootHash(electionId).then((response) =>
       response
     )
-    if (await isVerified){
+    if (await isVerified) {
       alert("This election is Verified, you can close it!")
-    }else{
+    } else {
       alert("This elction has been tampered with!!")
     }
   }
@@ -67,13 +67,12 @@ class Admin extends Component<AdminProps, AdminState> {
       alert("Election has already ended");
     } else {
       this.forceUpdate()
-      this.appService.EndElection(election.electionId);
+      this.electionService.EndElection(election.electionId);
     }
   };
 
   componentDidMount() {
-    this.appService.getAllElections().then((response) => {
-      //console.log(response);
+    this.electionService.getAllElections().then((response) => {
       this.setState({ elections: response });
     });
   }

@@ -1,30 +1,26 @@
 import './App.css';
 import { Routes, Route } from "react-router-dom";
 import './index.css';
-import Login from "./pages/Login";
-import SignUp from "./pages/SignUp";
 import HomePage from './pages/HomePage';
-import Election from './pages/Election';
-import Register from './pages/Register';
 import Admin from './pages/Admin';
 import CreateElection from './pages/CreateElection';
-import VoteAfterMitId from './pages/VoteAfterMitId';
+import ElectionDescription from './pages/ElectionDescription';
+import ElectionSign from './pages/ElectionSign';
+import Error from './pages/Error';
+
 
 
 export default function App() {
-  let id = localStorage.getItem("sessionId")
 
   return (
     <>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/signup" element={<SignUp />} />
         <Route path="/CreateElection" element={<CreateElection />} />
-        <Route path="/Election" element={<Election/>} />
-        <Route path="/VoteAfterMitId" element={ id==null ? <Login/> :(<VoteAfterMitId/> ) } />
+        <Route path="/Election/:electionId" element={<ElectionDescription/>}></Route>
         <Route path="/Admin" element={<Admin/>} />
+        <Route path="/Error" element={<Error/>} />
+        <Route path="/Election/sign/:electionId" element={<ElectionSign/>} />
       </Routes>
     </>
   );

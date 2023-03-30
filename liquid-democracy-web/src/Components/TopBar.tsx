@@ -8,7 +8,7 @@ export default function TopBar() {
           <div className="Logo">
             {" "}
             <span role="img" aria-label="logo">
-            🗳️
+              🗳️
             </span>{" "}
           </div>
           <div className="Title"> HomePage </div>

@@ -17,71 +17,73 @@ public class UserController : ControllerBase
         _hasher = hasher;
     }
 
-    [HttpPost]
     [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    [Route("/register")]
-    public void Register([FromBody] RegisterDTO registerDTO)
+    [HttpGet]
+    [ProducesResponseType(typeof(User), 200)]
+    [ProducesResponseType(400)]
+    public async Task<ActionResult<IEnumerable<User>>> Get()
     {
-        _hasher.Hash(registerDTO.Password, out string hashedPassword);
-        var response = _repository.Create(registerDTO.Username, registerDTO.Email, hashedPassword);
-        response.ToActionResult();
+        var response = await _repository.ReadAllAsync();
+        if (response == null)
+        {
+            return BadRequest();
+        }
+        return response.ToList();
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    [ProducesResponseType(typeof(User), 201)]
+    [ProducesResponseType(400)]
+    public async Task<ActionResult<User>> CreateUser([FromBody] UserDTO userDto)
+    {
+        var response = await _repository.Create(userDto.ProiverId, userDto.SessionExpires);
+        if (response == null)
+        {
+            return BadRequest();
+        }
+        return response;
     }
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<IEnumerable<User>> Get(){
-        var users = await _repository.ReadAllAsync();
-        return users;
-    }
-
-    [HttpPost]
-    [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [Route("/login")]
-    public IActionResult Login([FromBody]LoginDTO loginDTO)
+    [Route("/GetUser/{providerId}")]
+    [ProducesResponseType(typeof(User), 200)]
+    [ProducesResponseType(400)]
+    public async Task<ActionResult<User>> GetUser(string providerId)
     {
-        var response = _repository.GetByUsername(loginDTO.Username);
-
-        if (response.HTTPResponse == HTTPResponse.NotFound)
+        try
         {
-            return Unauthorized("Invalid username");
+            var response = await _repository.GetByProiverId(providerId);
+            if (response == null)
+            {
+                return BadRequest();
+            }
+            return response;
         }
-
-        var validPassword = _hasher.VerifyHash(loginDTO.Password, response.Model!.Password!);
-
-        if (!validPassword)
+        catch (Exception e)
         {
-            return Unauthorized("Invalid password");
+            return BadRequest(e.Message);
         }
-
-        return response.ToActionResult();
     }
 
-    [HttpGet("{electionId}")]
     [AllowAnonymous]
-    public Task<IEnumerable<User>> GetAllDelegatesByElection(int electionId)
+    [HttpPut]
+    [Route("/UpdateSession")]
+    public async Task<ActionResult<User?>> UpdateSession([FromBody] UserDTO userDto)
     {
-        var response = _repository.GetAllDelegetasByElection(electionId);
-        return response;
+        try
+        {
+            var response = await _repository.UpdateSessionTime(userDto.ProiverId, userDto.SessionExpires);
+            if (response == null)
+            {
+                return BadRequest();
+            }
+            return response;
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
-
-    [HttpGet("/AddMitIDSession/{userId}")]
-    [AllowAnonymous]
-    public RedirectResult AddMitIDSession(int userId)
-    {
-        var response = _repository.AddMidIDSession(userId);
-        return new RedirectResult(url: "http://localhost:3000/", permanent: true, preserveMethod: true);
-
-    }
-
-    [HttpGet("/AddMitIDSession/TimeStamp/{userId}")]
-    [AllowAnonymous]
-    public Task<bool> CheckMitIdTimeStamp(int userId){
-        var response = _repository.CheckMitIDTimeStamp(userId);
-        return response;
-    }
-
 }
