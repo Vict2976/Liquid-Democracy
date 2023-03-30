@@ -1,0 +1,79 @@
+.Top-bar-container{
+    background-color: #008567;
+    background-repeat: no-repeat;
+    background-size: cover;  position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    right: 0;
+    font-size: 18px;
+    width: 100%;
+    min-height: 300px;
+    box-shadow: 5px 5px 10px silver;
+    
+}
+
+.Title {
+    font-weight: bold;
+    color: white;
+	font-family: Big Caslon,Book Antiqua,Palatino Linotype,Georgia,serif; 
+    font-size: 30px;
+    padding-bottom: 20px;
+}
+
+.Body-container{
+    display: flex;
+    flex-direction: row;
+    direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 3%;
+    position: fixed;
+    top: 40%;
+    overflow: auto;
+    height: calc(100% - 400px);
+    
+}
+
+
+.Description-container{
+    max-width: 50%;
+    padding-right: 20%;
+}
+
+.Lower-title{
+    font-weight: bold;
+}
+
+.Date-container{
+    max-width: 50%;
+    padding-right: 20%;
+}
+
+.Description-container{
+    max-width: 50%;
+    padding-right: 20%;
+}
+
+.Button-container{
+    position: relative;
+    width:500px;
+    margin:50px ;
+    float:right;
+    top:-40px;
+}
+.Vote-button {
+  font-family: Big Caslon,Book Antiqua,Palatino Linotype,Georgia,serif; 
+  transition-duration: 0.4s;
+  font-size: x-large; 
+  height: 100px;
+  width: fit-content;
+  background-color: #008567; /* Green */
+  color: white;
+}
+
+.Vote-button:hover {
+  background-color: white; /* Green */
+  color: #008567;
+}

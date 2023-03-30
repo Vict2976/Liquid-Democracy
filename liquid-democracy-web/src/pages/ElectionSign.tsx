@@ -3,6 +3,8 @@ import { ElectionService } from "../services/election.service";
 import { Election, Candidate } from "../builder/Interface";
 import { AuthenticateService } from "../services/authenticate.service";
 import { SigningService } from "../services/signing.service";
+import '../styling/ElectionSign.css';
+
 
 async function finalizeSign(electionId: number, candidateId: number) {
   const signingService = new SigningService()
@@ -73,22 +75,25 @@ export default function ElectionSign() {
   } else if (candidates != undefined && election != undefined) {
     return (
       <view>
-        <ul>
-          <li>{election.name}</li>
-          <li>{election.description}</li>
-          <li>{election.createdDate}</li>
-          <li>{election.electionId}</li>
-          <li>{election.votings}</li>
-        </ul>
 
-        <div>
-          <h3>Candidates</h3>
-          {candidates.map((can) => (
-            <ul>
-              <li>{can.name}</li>
-              <button onClick={() => finalizeSign(election.electionId, can.candidateId)}> Vote For: {can.name}</button>
-            </ul>
-          ))}
+        <div className="Top-bar-container">
+          <div className="Title"> {election.name} </div>
+        </div>
+
+        <div className="Description-container">
+          <p>On this page you can see the candidates for the chosen election. To vote for a candidate, you must click the sign button below the chosen candidate, and then finalie the signing process. Oncee signed, a confirmation email will be sent</p>
+        </div>
+
+        <div className="Body-container">
+          <h3>Candidates:</h3>
+          <div className="Candidates-container">
+            {candidates.map((can) => (
+              <ul>
+                <li>{can.name}</li>
+                <button className="Sign-button" onClick={() => finalizeSign(election.electionId, can.candidateId)}> Sign vote for: {can.name}</button>
+              </ul>
+            ))}
+          </div>
         </div>
 
       </view>

@@ -1,5 +1,5 @@
 .Container {
-  background-image: url('../images/parliment.png');
+  background-color: #008567;
   background-repeat: no-repeat;
   background-size: cover;  position: fixed;
   display: flex;
@@ -24,7 +24,8 @@
   font-weight: bold;
   color: aliceblue;
   font-size: 30px;
-  padding-bottom: 20px
+  padding-bottom: 20px;
+  font-family: Big Caslon,Book Antiqua,Palatino Linotype,Georgia,serif; 
 }
 
 .TopButton {
@@ -38,6 +39,7 @@
   font-size: 1rem;
   padding: 1rem 3rem;
   transition: 0.2s;
+  font-family: Big Caslon,Book Antiqua,Palatino Linotype,Georgia,serif; 
 }
 
 .TopButton:hover {

@@ -30,3 +30,7 @@
 .single-card{
   width: 100%;
 }
+
+.single-card:hover{
+  box-shadow: 5px 5px 10px silver;
+}
