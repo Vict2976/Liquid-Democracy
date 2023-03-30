@@ -11,6 +11,4 @@ public class VoteUsedOn
 
     public Vote Vote { get; set; }
     public Candidate? Candidate { get; set; }
-    public User? Delegate { get; set; }
-
 }

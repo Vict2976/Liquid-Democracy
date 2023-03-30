@@ -27,10 +27,35 @@
     font-family: Roboto;
   }
 
-.single-card{
-  width: 100%;
+.single-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.single-card:hover{
+.single-card:hover {
   box-shadow: 5px 5px 10px silver;
+}
+
+.card-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 150px; /* adjust as needed */
+}
+
+.card-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height:fit-content; /* adjust as needed */
+  margin-top: 15px;
+}
+
+.card-date {
+  font-size: 14px;
+  color: #666;
+  margin-top: 5px;
 }

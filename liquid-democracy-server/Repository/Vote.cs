@@ -12,6 +12,4 @@ public class Vote
 
     public User User { get; set; }
     public Election Election { get; set; }
-    public ICollection<VoteUsedOn> DelegatedVotes { get; set; }
-
 }

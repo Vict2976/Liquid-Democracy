@@ -35,24 +35,19 @@ function HomePage() {
         <Grid container spacing={2} className='grid-box'>
           {elections.map((ele) => (
             <Grid item xs={12} sm={6} md={3} key={ele.electionId}>
-              <Card className='single-card'>
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    {ele.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {ele.description}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <p>
-                    <a href={"/Election/" + ele.electionId}> See Election </a>
-                  </p>
-                  <Typography >
+              <Card className='single-card' onClick={ () => window.location.href = "/Election/" + ele.electionId}>
+                <div className="card-content-wrapper">
+                  <div className="card-header">
+                    <Typography gutterBottom variant="h5" component="div">
+                      {ele.name}
+                    </Typography>
+                  </div>
+                  <Typography className="card-date">
                     {ele.createdDate}
                   </Typography>
-                </CardActions>
+                </div>
               </Card>
+
             </Grid>
           ))}
         </Grid>

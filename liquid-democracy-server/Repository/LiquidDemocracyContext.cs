@@ -54,12 +54,6 @@ public class LiquidDemocracyContext : DbContext, ILiquidDemocracyContext
         .HasKey(v => new { v.VoteUsedOnId });
 
     modelBuilder.Entity<VoteUsedOn>()
-        .HasOne(v => v.Vote)
-        .WithMany(v => v.DelegatedVotes)
-        .HasForeignKey(v => v.VoteId)
-        .OnDelete(DeleteBehavior.Cascade);
-
-    modelBuilder.Entity<VoteUsedOn>()
         .HasOne(v => v.Candidate)
         .WithMany(c => c.DelegatedVotes)
         .OnDelete(DeleteBehavior.Restrict);
