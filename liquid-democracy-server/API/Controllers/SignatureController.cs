@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Repository;
 
+
 [ApiController]
 [Route("[controller]")]
 public class SignatureController : ControllerBase
@@ -13,10 +14,16 @@ public class SignatureController : ControllerBase
     readonly IVoteRepository _repository;
     private readonly IConfiguration _config;
 
-    public SignatureController(IVoteRepository repository, IConfiguration config)
+    private readonly ICandidateRepository _candidateRepo;
+    private readonly IElectionRepository _electionRepo;
+
+    public SignatureController(IVoteRepository repository, IConfiguration config, ICandidateRepository candidateRepo, IElectionRepository electionRepository)
     {
         _repository = repository;
         _config = config;
+        _candidateRepo = candidateRepo;
+        _electionRepo = electionRepository;
+
     }
 
     [AllowAnonymous]
@@ -72,17 +79,26 @@ public class SignatureController : ControllerBase
         var accesToken = tokenObject["access_token"].ToString();
         return accesToken;
     }
+
     
     [AllowAnonymous]
     [Route("/Sign/Candidate/{providerId}/{electionId}/{candidateId}")]
     [HttpGet]
-    public async Task<ActionResult> CreateCandidateSign(string providerId, int electionId, int? candidateId)
+    public async Task<ActionResult> CreateCandidateSign(string providerId, int electionId, int candidateId)
     {
 
     var clientId = _config["Signicat:ClientId"];
     var clientSecret = _config["Signicat:ClientSecret"];
     var scopes = new[] {OAuthScope.DocumentWrite, OAuthScope.DocumentRead, OAuthScope.DocumentFile};
     var _signatureService = new SignatureService(clientId, clientSecret, scopes);
+
+    //Create specific ballot
+    var candidate = await _candidateRepo.GetById(candidateId)!;
+    var election = await _electionRepo.GetElectionByIDAsync(electionId);
+
+    MakePdf makePdf = new MakePdf();
+    makePdf.createBallot(providerId, election.Name, candidate.Name);
+
 
     // Get local file to be signed
     var filePath = Path.Combine("Vote.pdf");

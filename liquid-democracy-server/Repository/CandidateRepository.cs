@@ -38,4 +38,11 @@ public class CandidateRepository : ICandidateRepository
         return candidates;
 
     }
+
+    public async Task<Candidate>? GetById(int candidateId)
+    {
+        var candidate = await _context.Candidates.Where(c => c.CandidateId == candidateId).FirstAsync();
+        return candidate;
+
+    }
 }
