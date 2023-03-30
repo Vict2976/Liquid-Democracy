@@ -36,6 +36,12 @@ public class CandidateRepository : ICandidateRepository
     {
         var candidates = await _context.Candidates.Where(c => c.ElectionId == electionId).ToListAsync();
         return candidates;
+    }
+
+    public async Task<Candidate>? GetById(int candidateId)
+    {
+        var candidate = await _context.Candidates.Where(c => c.CandidateId == candidateId).FirstAsync();
+        return candidate;
 
     }
 }
