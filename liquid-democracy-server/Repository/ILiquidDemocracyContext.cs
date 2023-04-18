@@ -10,6 +10,8 @@ public interface ILiquidDemocracyContext : IDisposable
     public DbSet<Vote> Votes { get; }
     public DbSet<VoteUsedOn> VoteUsedOns { get; }
 
+    public DbSet<Block> Blocks { get; }
+
     int SaveChanges();
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

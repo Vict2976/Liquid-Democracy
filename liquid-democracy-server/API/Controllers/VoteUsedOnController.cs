@@ -10,13 +10,24 @@ public class VoteUsedOnController : ControllerBase
     readonly IVoteRepository _voteRepository;
     readonly IElectionRepository _electionRepository;
     readonly IUserRepository _userRepository;
+    readonly IBlockRepository _blockRepository;
 
-    public VoteUsedOnController(IVoteUsedOnRepository repository, IVoteRepository voteRepository, IElectionRepository electionRepository, IUserRepository userRepository)
+    private readonly IConfiguration _config;
+
+    public VoteUsedOnController(
+        IVoteUsedOnRepository repository,
+        IVoteRepository voteRepository,
+        IElectionRepository electionRepository,
+        IUserRepository userRepository,
+        IBlockRepository blockRepository,
+        IConfiguration config)
     {
         _repository = repository;
         _voteRepository = voteRepository;
         _electionRepository = electionRepository;
         _userRepository = userRepository;
+        _blockRepository = blockRepository;
+        _config = config;
     }
 
     [AllowAnonymous]
@@ -46,9 +57,15 @@ public class VoteUsedOnController : ControllerBase
         }
 
         var vote = await _voteRepository.CreateAsync(user.UserId, electionId, documentId);
-        await buildNewRootHash(electionId);
 
         await _repository.CreateVoteUsedOnForCandidate(vote.VoteId, candidateId);
+
+        var allVotes = await _voteRepository.ReadFromElectionId(electionId);
+        var amountOfVotes = allVotes.Count();
+
+        if (amountOfVotes % 4 == 0){
+            await AddNewBlock(electionId, allVotes);
+        }
 
         return new RedirectResult(url: "http://localhost:3000/", permanent: true, preserveMethod: true);
     }
@@ -59,13 +76,39 @@ public class VoteUsedOnController : ControllerBase
     [ProducesResponseType(typeof(bool), 200)]
     public async Task<bool> VeirfyElectionByRootHash(int electionId)
     {
-        var canBeVerified = await verifyRootHash(electionId);
+        var canBeVerified = await VerifyElectionHashChain(electionId);
         return canBeVerified;
+    }
+
+    private async Task<bool> VerifyElectionHashChain(int electionId)
+    {
+        var election = await _electionRepository.GetElectionByIDAsync(electionId);
+        var blocks = await _blockRepository.GetAllBlocksForElection(electionId);
+
+        var RootHashForElection = election.RootHash;
+
+        var genBlock = new List<string>{_config["BlockChain:GenesisBlock"]};
+        var checkChain = new HashChain(genBlock);
+
+        foreach(var block in blocks){
+            var dataset = new List<string>{checkChain.BlockHash, block.BlockHash};
+            checkChain = new HashChain(dataset);
+        }
+
+        if (RootHashForElection == checkChain.BlockHash)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 
     private async Task<bool> verifyRootHash(int electionId)
     {
+
         var votes = await _voteRepository.ReadFromElectionId(electionId);
         var election = await _electionRepository.GetElectionByIDAsync(electionId);
 
@@ -87,8 +130,17 @@ public class VoteUsedOnController : ControllerBase
             documentIds.Add(vote.DocumentId);
         }
 
-        MerkleTree merkleTree = new MerkleTree(documentIds);
-        if (RootHashForElection == merkleTree.RootHash)
+        var genBlock = new List<string>{_config["BlockChain:GenesisBlock"]};
+        var checkTree = new MerkleTree(genBlock);
+
+        foreach(var dataElement in documentIds){
+            var dataset = new List<string>{checkTree.RootHash, dataElement};
+            checkTree = new MerkleTree(dataset);
+        }
+
+        var currentRootHash = election.RootHash;
+
+        if (RootHashForElection == checkTree.RootHash)
         {
             return true;
         }
@@ -98,18 +150,37 @@ public class VoteUsedOnController : ControllerBase
         }
     }
 
-    private async Task buildNewRootHash(int electionId)
+    private async Task buildNewRootHash(int electionId, string documentId)
     {
-        var votes = await _voteRepository.ReadFromElectionId(electionId);
+        var election = await _electionRepository.GetElectionByIDAsync(electionId);
 
-        var documentIds = new List<string>();
-
-        foreach (var vote in votes)
-        {
-            documentIds.Add(vote.DocumentId);
-        }
-
-        MerkleTree merkleTree = new MerkleTree(documentIds);
+        var oldRT = election.RootHash;
+        var dataSet = new List<string>{oldRT, documentId};
+        MerkleTree merkleTree = new MerkleTree(dataSet);
         await _electionRepository.UpdateElectionRootHash(electionId, merkleTree.RootHash);
     }
+
+    private async Task AddNewBlock(int electionId, IEnumerable<Vote?>? allVotes){
+        //Right now all votes are hashed together an added. We want only the most recent 4 votes. 
+
+        var datasetForBlock = new List<string>();
+        foreach(var vote in allVotes){
+            datasetForBlock.Add(vote.DocumentId);
+        }
+
+        var merkleTree = new MerkleTree(datasetForBlock);
+        await _blockRepository.CreateAsync(electionId, merkleTree.RootHash);
+
+        //Add new hashChain to election
+        var election = await _electionRepository.GetElectionByIDAsync(electionId);
+        var currentRootHash = election.RootHash;
+        var dataset = new List<string>{currentRootHash, merkleTree.RootHash};
+        var chainLink = new HashChain(dataset);
+        election.RootHash = chainLink.BlockHash;
+    }
 }
+
+//TO:DO::
+// VerifyRootHash skal nu linke alle blokke sammen og checke op med current hash
+// BuildNewRootHash skal kun køres hver 4. gang vi tilføjer en ny stemme (Datasæte = 4 nyeste stemme inkl. den vi lige har modtaget)
+// Hver gang den køres, skal vi lave en ny Block ud fra Current hash og nye merkle tree root hash 

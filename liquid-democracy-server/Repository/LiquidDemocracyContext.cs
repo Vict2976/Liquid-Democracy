@@ -27,6 +27,7 @@ public class LiquidDemocracyContext : DbContext, ILiquidDemocracyContext
     public DbSet<Election> Elections => Set<Election>();
     public DbSet<Vote> Votes => Set<Vote>();
     public DbSet<VoteUsedOn> VoteUsedOns => Set<VoteUsedOn>();
+    public DbSet<Block> Blocks => Set<Block>();
 
     public LiquidDemocracyContext(DbContextOptions<LiquidDemocracyContext> options) : base(options) { }
 
