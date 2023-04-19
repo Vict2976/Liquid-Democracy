@@ -56,7 +56,7 @@ public class CandidateController : ControllerBase
         return response.ToList();
     }
 
-    [AllowAnonymous]
+/*     [AllowAnonymous]
     [HttpGet]
     [Route("countVoters/{electionId}")]
     [ProducesResponseType(typeof(int), 200)]
@@ -70,9 +70,9 @@ public class CandidateController : ControllerBase
             amountOfRecievedVotes += candidate.RecievedVotes;
         }
         return amountOfRecievedVotes;
-    }
+    } */
 
-    [AllowAnonymous]
+/*     [AllowAnonymous]
     [HttpGet]
     [Route("findWinner/{electionId}")]
     [ProducesResponseType(typeof(int), 200)]
@@ -88,5 +88,5 @@ public class CandidateController : ControllerBase
             }
         }
         return candidateWinner;
-    }
+    } */
 }

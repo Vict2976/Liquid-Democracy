@@ -16,12 +16,17 @@ public class ElectionRepository : IElectionRepository
 
     public async Task<Election?> CreateAsync(string name, string description, DateTime createdDate, ICollection<string> candidates){
 
+        var originalDataSet = new List<string>{name, description, createdDate.ToString()}; //No candidates
+
+        var rootHash = new MerkleTree(originalDataSet).RootHash;
+
         var election = new Election
             {
                 Name = name,
                 Description = description,
                 CreatedDate = createdDate,
-                IsEnded = false
+                IsEnded = false,
+                RootHash = rootHash
             };
         _context.Elections.Add(election);
 
@@ -40,11 +45,8 @@ public class ElectionRepository : IElectionRepository
         return elections;
     }
 
-
-
     public async Task<Election?> GetElectionByIDAsync(int electionId){
         var election = await _context.Elections.Where(c => c.ElectionId == electionId).Select(c=> c).FirstAsync();
-
         return election;
     }
 

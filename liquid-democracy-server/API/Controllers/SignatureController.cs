@@ -11,19 +11,17 @@ using Repository;
 public class SignatureController : ControllerBase
 {
     private readonly IConfiguration _config;
-    readonly IVoteRepository _repository;
     private readonly ICandidateRepository _candidateRepo;
     private readonly IElectionRepository _electionRepo;
 
-    public SignatureController(IVoteRepository repository, IConfiguration config, ICandidateRepository candidateRepo, IElectionRepository electionRepository)
+    public SignatureController(IConfiguration config, ICandidateRepository candidateRepo, IElectionRepository electionRepository)
     {
         _config = config;
-        _repository = repository;
         _candidateRepo = candidateRepo;
         _electionRepo = electionRepository;
     }
 
-    [AllowAnonymous]
+/*     [AllowAnonymous]
     [Route("/Verify/{electionId}")]
     [HttpGet]
     [ProducesResponseType(typeof(Election), 200)]
@@ -34,7 +32,7 @@ public class SignatureController : ControllerBase
             if (!isVerified) return false;
         }
         return true;
-    }
+    } */
 
 
     private async Task<bool> isDocumentSigned(string documentId){
@@ -78,9 +76,9 @@ public class SignatureController : ControllerBase
     }
     
     [AllowAnonymous]
-    [Route("/Sign/Candidate/{providerId}/{electionId}/{candidateId}")]
+    [Route("/Sign/Ballot/{providerId}/{electionId}/{candidateId}")]
     [HttpGet]
-    public async Task<ActionResult> CreateCandidateSign(string providerId, int electionId, int candidateId)
+    public async Task<ActionResult> CreateBallot(string providerId, int electionId, int candidateId)
     {
 
     var clientId = _config["Signicat:ClientId"];
@@ -91,6 +89,9 @@ public class SignatureController : ControllerBase
     //Create specific ballot
     var candidate = await _candidateRepo.GetById(candidateId)!;
     var election = await _electionRepo.GetElectionByIDAsync(electionId);
+
+    var candidateIdAsString = candidate.CandidateId.ToString();
+    Console.WriteLine("ID AS STRING" + candidateIdAsString);
 
     MakePDF makePdf = new MakePDF();
     makePdf.createBallot(providerId, election.Name, candidate.Name);
@@ -186,7 +187,7 @@ public class SignatureController : ControllerBase
             RedirectMode = RedirectMode.Redirect,
             Error = "https://www.google.com/",
             Cancel = "https://www.google.com/",
-            Success = $"https://localhost:7236/ForCandidate/{providerId}/{electionId}/{candidateId}/{res.DocumentId}",
+            Success = $"https://localhost:7236/CreateBallot/{candidateIdAsString}/{providerId}/{res.DocumentId}",
         },
         SignatureType = new SignatureType()
         {
