@@ -109,4 +109,54 @@ public class BallotRepository : IBallotRepository
         var accesToken = tokenObject["access_token"].ToString();
         return accesToken;
     }
+
+    public async Task<bool> CheckIntegrityByRH(){
+        //Get ballot from repo
+        //Decrypt everything
+        //Build merkleTreee
+        //Does the roothashes Match?
+
+        throw new NotImplementedException();
+    }
+
+    public async Task FindAndDeleteAllOldVotes(){
+        //Foreach Ballot, call DecryptBallotById and add to list
+        //Foreach Ballot in decryptet list, check for same provider id
+        //For entries with same provider ID find newest Timestamp
+        //Check for tamper and validity
+        //Add to new database, only encryptet candidateId
+    }
+
+    public async Task<Ballot> DecryptBallotById(int ballotId){
+
+        var encryptedBallot = await GetBallotByIdAsync(ballotId);
+        var documentInformation = await GetDocumentInfo(encryptedBallot.DocumentId);
+        var key = GetKeyForSigner(documentInformation);
+        Thread.Sleep(2000); // Pause for 2 seconds
+
+        if (encryptedBallot == null)
+        {
+            return null;
+        }
+
+        var decryptedCandidateId = EncryptionHelper.Decrypt(encryptedBallot.CandidateId, key);
+        var decryptedProviderId = EncryptionHelper.Decrypt(encryptedBallot.ProivderId, key);
+        var decryptedTimeStamp = EncryptionHelper.Decrypt(encryptedBallot.TimeStamp, key);
+        var decryptedSalt = EncryptionHelper.Decrypt(encryptedBallot.Salt, key);
+
+        var originalDataSet = new List<string>{decryptedCandidateId, decryptedProviderId, decryptedTimeStamp, decryptedSalt};
+        var originalRH = new MerkleTree(originalDataSet).RootHash;
+
+        var decryptetBallot = new Ballot
+        {
+            BallotId = encryptedBallot.BallotId,
+            CandidateId = decryptedCandidateId,
+            ProivderId = decryptedProviderId,
+            TimeStamp = decryptedTimeStamp,
+            Salt = decryptedSalt,
+            DocumentId = encryptedBallot.DocumentId,
+            RootHash = originalRH
+        };
+        return decryptetBallot;
+    }
 }
