@@ -91,7 +91,6 @@ public class SignatureController : ControllerBase
     var election = await _electionRepo.GetElectionByIDAsync(electionId);
 
     var candidateIdAsString = candidate.CandidateId.ToString();
-    Console.WriteLine("ID AS STRING" + candidateIdAsString);
 
     MakePDF makePdf = new MakePDF();
     makePdf.createBallot(providerId, election.Name, candidate.Name);

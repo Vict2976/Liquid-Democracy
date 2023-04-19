@@ -36,7 +36,7 @@ public class BallotController : ControllerBase
     [HttpGet("{ballotId}")]
     [ProducesResponseType(typeof(Ballot), 200)]
     [ProducesResponseType(400)]
-    public async Task<ActionResult<string?>> DecryptBallot(int ballotId, string key){
+    public async Task<ActionResult<Ballot?>> DecryptBallot(int ballotId, string key){
         
         var response = await _repository.GetBallotByIdAsync(ballotId);
 
@@ -45,21 +45,26 @@ public class BallotController : ControllerBase
             return BadRequest();
         }
 
-        var encryptedCandidateId = EncryptionHelper.Decrypt(response.CandidateId, key);
+        var decryptedCandidateId = EncryptionHelper.Decrypt(response.CandidateId, key);
         var decryptedProviderId = EncryptionHelper.Decrypt(response.ProivderId, key);
         var decryptedTimeStamp = EncryptionHelper.Decrypt(response.TimeStamp, key);
         var decryptedSalt = EncryptionHelper.Decrypt(response.Salt, key);
 
-        var originalDataSet = new List<string>{encryptedCandidateId, decryptedProviderId, decryptedTimeStamp, decryptedSalt};
-
+        var originalDataSet = new List<string>{decryptedCandidateId, decryptedProviderId, decryptedTimeStamp, decryptedSalt};
         var originalRH = new MerkleTree(originalDataSet).RootHash;
-        
-        Console.WriteLine("Decrypted CandidateId: " + encryptedCandidateId);
-        Console.WriteLine("Decrypted ProviderId: " + decryptedProviderId);
-        Console.WriteLine("Decrypted TimeStamp: " + decryptedTimeStamp);
-        Console.WriteLine("Decrypted Salt: " + decryptedSalt);
 
-        return originalRH;
+        var decryptetBallot = new Ballot
+        {
+            BallotId = response.BallotId,
+            CandidateId = decryptedCandidateId,
+            ProivderId = decryptedProviderId,
+            TimeStamp = decryptedTimeStamp,
+            Salt = decryptedSalt,
+            DocumentId = response.DocumentId,
+            RootHash = originalRH
+        };
+
+        return decryptetBallot;
     }
 
     [AllowAnonymous]
@@ -71,11 +76,3 @@ public class BallotController : ControllerBase
     }  
     
 }
-
-
-
-/* string key = "Victor";
-// add padding to the key until it is a valid size for AES-128
-while (key.Length < 16) {
-    key += " ";
-} */

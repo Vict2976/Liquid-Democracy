@@ -19,7 +19,14 @@ public class BallotRepository : IBallotRepository
 
     public async Task<Ballot?> CreateAsync(string candidateId, string providerId, string documentId)
     {
-        var key = await GetKeyForSigner(documentId);
+        var documentInformation = await GetDocumentInfo(documentId);
+        Thread.Sleep(2000); // Pause for 2 seconds
+        var key = GetKeyForSigner(documentInformation);
+        var isSignedCorrectly = IsDocumentSigned(documentInformation);
+
+        if (!isSignedCorrectly){
+            return null;
+        }
         var salt = "salty";
         var timeStamp = DateTime.Now.ToString();
 
@@ -53,15 +60,21 @@ public class BallotRepository : IBallotRepository
         return ballot;
     }
 
-    private async Task<string> GetKeyForSigner(string documentId)
+    private string GetKeyForSigner(DocumentInformation document)
     {
-        var documentInformation = await GetDocumentInfo(documentId);
-        var symmetricKey =  documentInformation.signers[0].documentSignature.signatureMethodUniqueId;
+        var symmetricKey =  document.signers[0].documentSignature.signatureMethodUniqueId;
         return symmetricKey;
     }
 
+    private bool IsDocumentSigned(DocumentInformation document){
+        var succes = document.status.documentStatus;
+        if (succes == "signed"){
+            return true;
+        }
+        return false;
+    }
+
     public async Task<DocumentInformation> GetDocumentInfo(string documentId){
-        Thread.Sleep(2000); // Pause for 2 seconds
         var token = await GetToken();
         try{
             var client = new HttpClient();
