@@ -6,7 +6,7 @@ using UglyToad.PdfPig.Writer;
 
 public class MakePDF{
 
-    public void createBallot(string providerId, string electionName, string candidateName)
+    public void createBallot(string electionName, string candidateName)
     {
         PdfDocumentBuilder builder = new PdfDocumentBuilder();
 
@@ -17,7 +17,7 @@ public class MakePDF{
         PdfPoint closeToTop = new PdfPoint(15, page.PageSize.Top - 25);
 
         page.AddText("VotingInformation", 12, closeToTop, times);
-        page.AddText("This Is your Id: " + providerId , 10, closeToTop.Translate(0, -20), times);
+        page.AddText("Congratulations, you have voted!", 10, closeToTop.Translate(0, -20), times);
         page.AddText("Election you are voting in: "+ electionName, 10, closeToTop.Translate(0, -40), times);
         page.AddText("The Candidate you are voting for is: " + candidateName, 10, closeToTop.Translate(0, -60), times);
 

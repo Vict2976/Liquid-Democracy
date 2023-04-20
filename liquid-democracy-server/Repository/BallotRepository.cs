@@ -17,66 +17,79 @@ public class BallotRepository : IBallotRepository
         _config = config;
     }
 
-    public async Task<Ballot?> CreateAsync(string candidateId, string providerId, string documentId)
+    public async Task<Ballot?> CreateAsync(string candidateId, string uuid, string documentId)
     {
-        var documentInformation = await GetDocumentInfo(documentId);
-        Thread.Sleep(2000); // Pause for 2 seconds
+        Thread.Sleep(4000);
+        var token = await GetToken();
+        var documentInformation = await GetDocumentInfo(documentId, token);
+        var signerUuid = GetUuidForSigner(documentInformation);
+
+        if (uuid != signerUuid)
+        {
+            throw new Exception("This is not the authenticated signer");
+        }
+
         var key = GetKeyForSigner(documentInformation);
         var isSignedCorrectly = IsDocumentSigned(documentInformation);
 
-        if (!isSignedCorrectly){
+        if (!isSignedCorrectly)
+        {
             return null;
         }
-        var salt = "salty";
+        var nonce = GenerateNoncee();
         var timeStamp = DateTime.Now.ToString();
 
         var encryptedCandidateId = EncryptionHelper.Encrypt(candidateId, key);
-        var encryptedProviderId = EncryptionHelper.Encrypt(providerId, key);
+        var encryptedUuid = EncryptionHelper.Encrypt(uuid, key);
         var encryptedTimeStamp = EncryptionHelper.Encrypt(timeStamp, key);
-        var encryptedSalt = EncryptionHelper.Encrypt(salt, key);
+        var encryptedNonce = EncryptionHelper.Encrypt(nonce, key);
 
 
-        var originalDataSet = new List<string>{candidateId, providerId, timeStamp, salt};
+        var originalDataSet = new List<string> { candidateId, uuid, timeStamp, nonce };
 
         var rootHash = new MerkleTree(originalDataSet).RootHash;
 
         var ballot = new Ballot
-            {
-                CandidateId = encryptedCandidateId,
-                ProivderId = encryptedProviderId,
-                TimeStamp = encryptedTimeStamp,
-                Salt = encryptedSalt,
-                DocumentId = documentId,
-                RootHash = rootHash
-            };
-        
+        {
+            CandidateId = encryptedCandidateId,
+            Uuid = encryptedUuid,
+            TimeStamp = encryptedTimeStamp,
+            Nonce = encryptedNonce,
+            DocumentId = documentId,
+            RootHash = rootHash
+        };
+
         _context.Ballots.Add(ballot);
         await _context.SaveChangesAsync();
-        return ballot;   
+        return ballot;
     }
 
-    public async Task<Ballot?> GetBallotByIdAsync(int ballotId){
+    private string GenerateNoncee()
+    {
+        int length = 10; //Maybe make length random?
+        Random random = new Random();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < length; i++)
+        {
+            char ch = Convert.ToChar(Convert.ToInt32(Math.Floor(26 * random.NextDouble() + 65))); // generate a random uppercase letter
+            stringBuilder.Append(ch);
+        }
+
+        string randomString = stringBuilder.ToString();
+        return randomString;
+    }
+
+    public async Task<Ballot?> GetBallotByIdAsync(int ballotId)
+    {
         var ballot = await _context.Ballots.Where(b => b.BallotId == ballotId).Select(b => b).FirstAsync();
         return ballot;
     }
 
-    private string GetKeyForSigner(DocumentInformation document)
+    public async Task<DocumentInformation> GetDocumentInfo(string documentId, string token)
     {
-        var symmetricKey =  document.signers[0].documentSignature.signatureMethodUniqueId;
-        return symmetricKey;
-    }
-
-    private bool IsDocumentSigned(DocumentInformation document){
-        var succes = document.status.documentStatus;
-        if (succes == "signed"){
-            return true;
-        }
-        return false;
-    }
-
-    public async Task<DocumentInformation> GetDocumentInfo(string documentId){
-        var token = await GetToken();
-        try{
+        try
+        {
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Get, "https://api.idfy.io/signature/documents/" + documentId);
             request.Headers.Add("Authorization", "Bearer " + token);
@@ -88,16 +101,125 @@ public class BallotRepository : IBallotRepository
             var documentInformation = JsonConvert.DeserializeObject<DocumentInformation>(responseContent);
             return documentInformation;
         }
-        catch(HttpRequestException e){
+        catch (HttpRequestException e)
+        {
             return new DocumentInformation();
         }
     }
 
-    private async Task<string> GetToken(){
+    //Foreach Ballot, call DecryptBallotById and add to list
+    //Foreach Ballot in decryptet list, check for same provider id
+    //For entries with same provider ID find newest Timestamp
+    //Check for tamper and validity
+    //Add to new database, only encryptet candidateId
+    public async Task<IEnumerable<Ballot>> FindAndDeleteAllOldVotes()
+    {
+        var allBallots = await _context.Ballots.ToListAsync();
+        var decryptetBallots = new List<Ballot>();
+
+        foreach (var ballot in allBallots)
+        {
+            try
+            {
+                var decryptetBallot = await DecryptBallotById(ballot.BallotId);
+                decryptetBallots.Add(decryptetBallot);
+            }
+            catch (Exception e)
+            {
+                continue;
+            }
+        }
+
+        var finalBallots = RemoveOlderBallotsWithSameProviderId(decryptetBallots);
+
+        foreach(var ballot in finalBallots){
+            await SaveSelectedCandidateInNewTable(ballot.CandidateId);
+        }
+
+        return finalBallots;
+    }
+
+    public async Task<Ballot> DecryptBallotById(int ballotId)
+    {
+        var token = await GetToken();
+        var encryptedBallot = await GetBallotByIdAsync(ballotId);
+        var documentInformation = await GetDocumentInfo(encryptedBallot.DocumentId, token);
+        var key = GetKeyForSigner(documentInformation);
+
+        if (encryptedBallot == null)
+        {
+            return null;
+        }
+
+        var decryptedCandidateId = Decrypt(encryptedBallot.CandidateId, key);
+        var decryptedProviderId = Decrypt(encryptedBallot.Uuid, key);
+        var decryptedTimeStamp = Decrypt(encryptedBallot.TimeStamp, key);
+        var decryptedNonce = Decrypt(encryptedBallot.Nonce, key);
+
+        var originalDataSet = new List<string> { decryptedCandidateId, decryptedProviderId, decryptedTimeStamp, decryptedNonce};
+        var originalRH = new MerkleTree(originalDataSet).RootHash;
+
+        if (encryptedBallot.RootHash != originalRH)
+        {
+            throw new Exception("This ballot has been tamperes with");
+        }
+
+        var decryptetBallot = new Ballot
+        {
+            BallotId = encryptedBallot.BallotId,
+            CandidateId = decryptedCandidateId,
+            Uuid = decryptedProviderId,
+            TimeStamp = decryptedTimeStamp,
+            Nonce = decryptedNonce,
+            DocumentId = encryptedBallot.DocumentId,
+            RootHash = originalRH
+        };
+        return decryptetBallot;
+    }
+
+    private async Task SaveSelectedCandidateInNewTable(string candidateId)
+    {
+
+        int result = Int32.Parse(candidateId);
+
+        var tally = new Tally
+        {
+            candidateId = result
+        };
+
+        await _context.Tallies.AddAsync(tally);
+        await _context.SaveChangesAsync();
+    }
+
+    private string GetUuidForSigner(DocumentInformation document)
+    {
+        var uuid = "";
+        document.signers[0].documentSignature.attributes.TryGetValue("mitid.uuid", out uuid);
+        return uuid;
+    }
+
+    private string GetKeyForSigner(DocumentInformation document)
+    {
+        var symmetricKey = document.signers[0].documentSignature.signatureMethodUniqueId;
+        return symmetricKey;
+    }
+
+    private bool IsDocumentSigned(DocumentInformation document)
+    {
+        var succes = document.status.documentStatus;
+        if (succes == "signed")
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private async Task<string> GetToken()
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, "https://api.signicat.io/oauth/connect/token");
         var clientCredentials = _config["Signicat:ClientCredentials"];
-        request.Headers.Add("Authorization", clientCredentials);        
+        request.Headers.Add("Authorization", clientCredentials);
         var collection = new List<KeyValuePair<string, string>>();
         collection.Add(new("grant_type", "client_credentials"));
         var content = new FormUrlEncodedContent(collection);
@@ -110,7 +232,43 @@ public class BallotRepository : IBallotRepository
         return accesToken;
     }
 
-    public async Task<bool> CheckIntegrityByRH(){
+    private List<Ballot> RemoveOlderBallotsWithSameProviderId(List<Ballot> ballots)
+    {
+        var providerBallots = new Dictionary<string, List<Ballot>>();
+
+        // Group the ballots by providerId
+        foreach (var ballot in ballots)
+        {
+            if (!string.IsNullOrEmpty(ballot.Uuid))
+            {
+                if (!providerBallots.ContainsKey(ballot.Uuid))
+                {
+                    providerBallots.Add(ballot.Uuid, new List<Ballot>());
+                }
+                providerBallots[ballot.Uuid].Add(ballot);
+            }
+        }
+
+        var result = new List<Ballot>();
+
+        // Find the most recent ballot among each group of providerId
+        foreach (var group in providerBallots.Values)
+        {
+            var mostRecentBallot = group[0];
+            foreach (var ballot in group)
+            {
+                if (DateTime.Parse(ballot.TimeStamp) > DateTime.Parse(mostRecentBallot.TimeStamp))
+                {
+                    mostRecentBallot = ballot;
+                }
+            }
+            result.Add(mostRecentBallot);
+        }
+        return result;
+    }
+
+    private async Task<bool> CheckIntegrityByRH()
+    {
         //Get ballot from repo
         //Decrypt everything
         //Build merkleTreee
@@ -119,44 +277,16 @@ public class BallotRepository : IBallotRepository
         throw new NotImplementedException();
     }
 
-    public async Task FindAndDeleteAllOldVotes(){
-        //Foreach Ballot, call DecryptBallotById and add to list
-        //Foreach Ballot in decryptet list, check for same provider id
-        //For entries with same provider ID find newest Timestamp
-        //Check for tamper and validity
-        //Add to new database, only encryptet candidateId
-    }
-
-    public async Task<Ballot> DecryptBallotById(int ballotId){
-
-        var encryptedBallot = await GetBallotByIdAsync(ballotId);
-        var documentInformation = await GetDocumentInfo(encryptedBallot.DocumentId);
-        var key = GetKeyForSigner(documentInformation);
-        Thread.Sleep(2000); // Pause for 2 seconds
-
-        if (encryptedBallot == null)
+    private string Decrypt(string cipherText, string key)
+    {
+        try
         {
-            return null;
+            var decryptedCipherText = EncryptionHelper.Decrypt(cipherText, key);
+            return decryptedCipherText;
         }
-
-        var decryptedCandidateId = EncryptionHelper.Decrypt(encryptedBallot.CandidateId, key);
-        var decryptedProviderId = EncryptionHelper.Decrypt(encryptedBallot.ProivderId, key);
-        var decryptedTimeStamp = EncryptionHelper.Decrypt(encryptedBallot.TimeStamp, key);
-        var decryptedSalt = EncryptionHelper.Decrypt(encryptedBallot.Salt, key);
-
-        var originalDataSet = new List<string>{decryptedCandidateId, decryptedProviderId, decryptedTimeStamp, decryptedSalt};
-        var originalRH = new MerkleTree(originalDataSet).RootHash;
-
-        var decryptetBallot = new Ballot
+        catch (Exception e)
         {
-            BallotId = encryptedBallot.BallotId,
-            CandidateId = decryptedCandidateId,
-            ProivderId = decryptedProviderId,
-            TimeStamp = decryptedTimeStamp,
-            Salt = decryptedSalt,
-            DocumentId = encryptedBallot.DocumentId,
-            RootHash = originalRH
-        };
-        return decryptetBallot;
+            throw new Exception("Ballot has been tampered with");
+        }
     }
 }

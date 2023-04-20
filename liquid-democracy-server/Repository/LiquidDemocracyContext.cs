@@ -25,7 +25,7 @@ public class LiquidDemocracyContext : DbContext, ILiquidDemocracyContext
     public DbSet<Election> Elections => Set<Election>();
     public DbSet<Candidate> Candidates => Set<Candidate>();
     public DbSet<Ballot> Ballots => Set<Ballot>();
-
+    public DbSet<Tally> Tallies => Set<Tally>();
 
     public LiquidDemocracyContext(DbContextOptions<LiquidDemocracyContext> options) : base(options) { }
 

@@ -4,11 +4,11 @@ import { isRouteErrorResponse } from 'react-router-dom';
 
 export class SigningService {
 
-  public async SignVoteForCandidate(providerId: number, electionId: any, candidateId: number): Promise<any> {
+  public async SignVoteForCandidate(UUID: number, electionId: any, candidateId: number): Promise<any> {
     const config: AxiosRequestConfig = {
       method: 'get',
       maxBodyLength: Infinity,
-      url: 'https://localhost:7236/Sign/Ballot/' + providerId + "/" + electionId + "/" + candidateId,
+      url: 'https://localhost:7236/Sign/Ballot/' + UUID + "/" + electionId + "/" + candidateId,
       headers: {}
     };
     try {
