@@ -1,6 +1,8 @@
 namespace Server.Controllers;
 
+using System.Security.Cryptography;
 using Repository;
+using Security;
 
 
 [ApiController]
@@ -50,7 +52,7 @@ public class BallotController : ControllerBase
         }
         return response;
     }
-    
+
     [AllowAnonymous]
     [HttpGet]
     [Route("/DecryptBallot/{ballotId}")]
@@ -81,4 +83,15 @@ public class BallotController : ControllerBase
         return response.ToList();
     }
 
+    [AllowAnonymous]
+    [HttpGet]
+    [Route("/ElepticCrypt")]
+    public void test(string vote)
+    {
+        foreach(var key in KeyStorage.keyDictionary){
+            Console.WriteLine("HEY");
+            Console.WriteLine(key.Key);
+            Console.WriteLine(key.Value);
+        }
+    } 
 }
