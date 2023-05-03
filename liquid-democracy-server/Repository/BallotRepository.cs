@@ -19,7 +19,7 @@ public class BallotRepository : IBallotRepository
 
     public async Task<Ballot?> CreateAsync(string candidateId, string uuid, string documentId)
     {
-/*         Thread.Sleep(4000);
+        Thread.Sleep(4000);
         var token = await GetToken();
         var documentInformation = await GetDocumentInfo(documentId, token);
         var signerUuid = GetUuidForSigner(documentInformation);
@@ -27,7 +27,7 @@ public class BallotRepository : IBallotRepository
         if (uuid != signerUuid)
         {
             throw new Exception("This is not the authenticated signer");
-        } */
+        }
 
 
         var nonce = GenerateNoncee();
@@ -137,17 +137,15 @@ public class BallotRepository : IBallotRepository
 
     public async Task<Ballot> DecryptBallotById(int ballotId)
     {
-  /*       var token = await GetToken();
+        var token = await GetToken();
         var encryptedBallot = await GetBallotByIdAsync(ballotId);
         var documentInformation = await GetDocumentInfo(encryptedBallot.DocumentId, token);
-        var key = GetKeyForSigner(documentInformation);
+        var isSigned = IsDocumentSigned(documentInformation);
 
-        if (encryptedBallot == null)
+        if (encryptedBallot == null || !isSigned)
         {
             return null;
-        } */
-
-        var encryptedBallot = await GetBallotByIdAsync(ballotId);
+        }
 
         var keys = RSAEncryption.RetrieveKeys(ballotId);
 
@@ -196,12 +194,6 @@ public class BallotRepository : IBallotRepository
         var uuid = "";
         document.signers[0].documentSignature.attributes.TryGetValue("mitid.uuid", out uuid);
         return uuid;
-    }
-
-    private string GetKeyForSigner(DocumentInformation document)
-    {
-        var symmetricKey = document.signers[0].documentSignature.signatureMethodUniqueId;
-        return symmetricKey;
     }
 
     private bool IsDocumentSigned(DocumentInformation document)
