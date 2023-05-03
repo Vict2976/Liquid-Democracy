@@ -16,8 +16,8 @@ async function finalizeSign(electionId: number, candidateId: number) {
     return
   }
   const sessionResponse = await authenticateService.GetSessionInformation(sessionId)
-  const proivderId = sessionResponse.identity.providerId
-  signingService.SignVoteForCandidate(proivderId, electionId, candidateId)
+  const UUID = sessionResponse.identity.attributes["mitid.uuid"]
+  signingService.SignVoteForCandidate(UUID, electionId, candidateId)
 }
 
 export default function ElectionSign() {

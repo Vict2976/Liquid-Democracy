@@ -16,11 +16,9 @@ builder.Services.AddScoped<IHasher, Hasher>();
 builder.Services.AddDbContext<LiquidDemocracyContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("liquiddemocracy")));
 builder.Services.AddScoped<ILiquidDemocracyContext, LiquidDemocracyContext>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICandidateRepository, CandidateRepository>();
 builder.Services.AddScoped<IElectionRepository, ElectionRepository>();
-builder.Services.AddScoped<IVoteRepository, VoteRepository>();
-builder.Services.AddScoped<IVoteUsedOnRepository, VoteUsedOnRepository>();
+builder.Services.AddScoped<IBallotRepository, BallotRepository>();
 // Add services to the container.
 
 builder.Services.AddControllers();

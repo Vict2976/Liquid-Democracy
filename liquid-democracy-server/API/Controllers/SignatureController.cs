@@ -11,19 +11,17 @@ using Repository;
 public class SignatureController : ControllerBase
 {
     private readonly IConfiguration _config;
-    readonly IVoteRepository _repository;
     private readonly ICandidateRepository _candidateRepo;
     private readonly IElectionRepository _electionRepo;
 
-    public SignatureController(IVoteRepository repository, IConfiguration config, ICandidateRepository candidateRepo, IElectionRepository electionRepository)
+    public SignatureController(IConfiguration config, ICandidateRepository candidateRepo, IElectionRepository electionRepository)
     {
         _config = config;
-        _repository = repository;
         _candidateRepo = candidateRepo;
         _electionRepo = electionRepository;
     }
 
-    [AllowAnonymous]
+/*     [AllowAnonymous]
     [Route("/Verify/{electionId}")]
     [HttpGet]
     [ProducesResponseType(typeof(Election), 200)]
@@ -34,53 +32,12 @@ public class SignatureController : ControllerBase
             if (!isVerified) return false;
         }
         return true;
-    }
-
-
-    private async Task<bool> isDocumentSigned(string documentId){
-        var token = await GetToken();
-        try{
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://api.idfy.io/signature/documents/" + documentId);
-            request.Headers.Add("Authorization", "Bearer " + token);
-            var content = new StringContent("{\n  \"title\": \"As simple as that\",\n  \"description\": \"This is an important document\",\n  \"externalId\": \"ae7b9ca7-3839-4e0d-a070-9f14bffbbf55\",\n  \"dataToSign\": {\n    \"base64Content\": \"VGhpcyB0ZXh0IGNhbiBzYWZlbHkgYmUgc2lnbmVk\",\n    \"fileName\": \"sample.txt\"\n  }, \"contactDetails\": {\n    \"email\": \"test@test.com\"\n  },\n  \"signers\": [ {\n      \"externalSignerId\": \"uoiahsd321982983jhrmnec2wsadm32\",\n      \"redirectSettings\": {\n        \"redirectMode\": \"donot_redirect\"\n      },\n      \"signatureType\": {\n        \"mechanism\": \"pkisignature\"\n      }\n    }\n  ]\n}", null, "application/json");
-            request.Content = content;
-            var response = await client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
-            var signedResponse = await response.Content.ReadAsStringAsync();
-            var signedObject = JObject.Parse(signedResponse);
-            var status = signedObject["status"];
-            var documentStatus = status["documentStatus"].ToString();
-            if (documentStatus == "signed"){
-                return true;
-            }
-            return false;
-        }catch(HttpRequestException e){
-            return false;
-        }
-    }
-
-    private async Task<string> GetToken(){
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, "https://api.signicat.io/oauth/connect/token");
-        var clientCredentials = _config["Signicat:ClientCredentials"];
-        request.Headers.Add("Authorization", clientCredentials);        
-        var collection = new List<KeyValuePair<string, string>>();
-        collection.Add(new("grant_type", "client_credentials"));
-        var content = new FormUrlEncodedContent(collection);
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-        var tokenResponse = await response.Content.ReadAsStringAsync();
-        var tokenObject = JObject.Parse(tokenResponse);
-        var accesToken = tokenObject["access_token"].ToString();
-        return accesToken;
-    }
+    } */
     
     [AllowAnonymous]
-    [Route("/Sign/Candidate/{providerId}/{electionId}/{candidateId}")]
     [HttpGet]
-    public async Task<ActionResult> CreateCandidateSign(string providerId, int electionId, int candidateId)
+    [Route("/Sign/Ballot/{uuid}/{electionId}/{candidateId}")]
+    public async Task<ActionResult> CreateBallot(string uuid, int electionId, int candidateId)
     {
 
     var clientId = _config["Signicat:ClientId"];
@@ -92,8 +49,10 @@ public class SignatureController : ControllerBase
     var candidate = await _candidateRepo.GetById(candidateId)!;
     var election = await _electionRepo.GetElectionByIDAsync(electionId);
 
+    var candidateIdAsString = candidate.CandidateId.ToString();
+
     MakePDF makePdf = new MakePDF();
-    makePdf.createBallot(providerId, election.Name, candidate.Name);
+    makePdf.createBallot(election.Name, candidate.Name);
 
 
     // Get local file to be signed
@@ -186,7 +145,7 @@ public class SignatureController : ControllerBase
             RedirectMode = RedirectMode.Redirect,
             Error = "https://www.google.com/",
             Cancel = "https://www.google.com/",
-            Success = $"https://localhost:7236/ForCandidate/{providerId}/{electionId}/{candidateId}/{res.DocumentId}",
+            Success = $"https://localhost:7236/CreateBallot/{candidateIdAsString}/{uuid}/{res.DocumentId}",
         },
         SignatureType = new SignatureType()
         {
@@ -205,5 +164,45 @@ public class SignatureController : ControllerBase
     // Redirect user to the URL retrieved from the SDK
     Response.Headers.Add("Location", res.Signers[0].Url);
     return new StatusCodeResult(303);
+    }
+
+        private async Task<bool> isDocumentSigned(string documentId){
+        var token = await GetToken();
+        try{
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://api.idfy.io/signature/documents/" + documentId);
+            request.Headers.Add("Authorization", "Bearer " + token);
+            var content = new StringContent("{\n  \"title\": \"As simple as that\",\n  \"description\": \"This is an important document\",\n  \"externalId\": \"ae7b9ca7-3839-4e0d-a070-9f14bffbbf55\",\n  \"dataToSign\": {\n    \"base64Content\": \"VGhpcyB0ZXh0IGNhbiBzYWZlbHkgYmUgc2lnbmVk\",\n    \"fileName\": \"sample.txt\"\n  }, \"contactDetails\": {\n    \"email\": \"test@test.com\"\n  },\n  \"signers\": [ {\n      \"externalSignerId\": \"uoiahsd321982983jhrmnec2wsadm32\",\n      \"redirectSettings\": {\n        \"redirectMode\": \"donot_redirect\"\n      },\n      \"signatureType\": {\n        \"mechanism\": \"pkisignature\"\n      }\n    }\n  ]\n}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var signedResponse = await response.Content.ReadAsStringAsync();
+            var signedObject = JObject.Parse(signedResponse);
+            var status = signedObject["status"];
+            var documentStatus = status["documentStatus"].ToString();
+            if (documentStatus == "signed"){
+                return true;
+            }
+            return false;
+        }catch(HttpRequestException e){
+            return false;
+        }
+    }
+
+    private async Task<string> GetToken(){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://api.signicat.io/oauth/connect/token");
+        var clientCredentials = _config["Signicat:ClientCredentials"];
+        request.Headers.Add("Authorization", clientCredentials);        
+        var collection = new List<KeyValuePair<string, string>>();
+        collection.Add(new("grant_type", "client_credentials"));
+        var content = new FormUrlEncodedContent(collection);
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+        var tokenResponse = await response.Content.ReadAsStringAsync();
+        var tokenObject = JObject.Parse(tokenResponse);
+        var accesToken = tokenObject["access_token"].ToString();
+        return accesToken;
     }
 }

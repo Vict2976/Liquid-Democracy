@@ -22,27 +22,15 @@ public class UserIDGenerator : ValueGenerator<int>
 }
 public class LiquidDemocracyContext : DbContext, ILiquidDemocracyContext
 {
-    public DbSet<User> Users => Set<User>();
-    public DbSet<Candidate> Candidates => Set<Candidate>();
     public DbSet<Election> Elections => Set<Election>();
-    public DbSet<Vote> Votes => Set<Vote>();
-    public DbSet<VoteUsedOn> VoteUsedOns => Set<VoteUsedOn>();
+    public DbSet<Candidate> Candidates => Set<Candidate>();
+    public DbSet<Ballot> Ballots => Set<Ballot>();
+    public DbSet<Tally> Tallies => Set<Tally>();
 
     public LiquidDemocracyContext(DbContextOptions<LiquidDemocracyContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-    modelBuilder.Entity<Vote>()
-        .HasOne(v => v.User)
-        .WithMany(u => u.Votes)
-        .HasForeignKey(v => v.BelongsToId)
-        .OnDelete(DeleteBehavior.Restrict);
-
-    modelBuilder.Entity<Vote>()
-        .HasOne(v => v.Election)
-        .WithMany(e => e.Votes)
-        .HasForeignKey(v => v.ElectionId)
-        .OnDelete(DeleteBehavior.Cascade);
 
     modelBuilder.Entity<Candidate>()
         .HasOne(c => c.Election)
@@ -50,16 +38,6 @@ public class LiquidDemocracyContext : DbContext, ILiquidDemocracyContext
         .HasForeignKey(c => c.ElectionId)
         .OnDelete(DeleteBehavior.Cascade);
 
-    modelBuilder.Entity<VoteUsedOn>()
-        .HasKey(v => new { v.VoteUsedOnId });
-
-    modelBuilder.Entity<VoteUsedOn>()
-        .HasOne(v => v.Candidate)
-        .WithMany(c => c.DelegatedVotes)
-        .OnDelete(DeleteBehavior.Restrict);
-
-    modelBuilder.Entity<User>()
-        .Property(u => u.UserId).HasValueGenerator<UserIDGenerator>();
     }
     
 }

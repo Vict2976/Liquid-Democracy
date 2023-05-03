@@ -13,5 +13,5 @@ public class Election
     public string? RootHash { get; set; }
 
     public ICollection<Candidate> Candidates { get; set; }
-    public ICollection<Vote> Votes { get; set; }
+
 }

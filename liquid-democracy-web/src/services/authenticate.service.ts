@@ -11,20 +11,6 @@ export class AuthenticateService {
         const status = sessionResponse.status
         if (status == "success") {
           sessionStorage.clear()
-          const providerId = sessionResponse.identity.providerId
-          const sessionExpires = sessionResponse.expires
-          this.UserExists(providerId).then((userResponse) => {
-            console.log(userResponse)
-            if (userResponse == 204) {
-              this.Register(providerId, sessionExpires).then((registerResponse) => {
-                console.log(registerResponse)
-                return registerResponse
-              })
-            } else {
-              console.log(userResponse)
-              return (userResponse)
-            }
-          })
         } else {
           alert("Your Sessions is not succesfull, click to start a new session")
           sessionStorage.clear()
@@ -62,48 +48,6 @@ export class AuthenticateService {
       headers: {
         'Content-Type': 'application/json'
       },
-    };
-    try {
-      const data = await axios(config).then((response) => response.data);
-      return data
-    } catch (error) {
-      console.log(error);
-      return Promise.reject();
-    }
-  }
-
-  public async UserExists(sessionId: string) {
-    const config: AxiosRequestConfig = {
-      method: 'get',
-      maxBodyLength: Infinity,
-      url: '  https://localhost:7236/GetUser/' + sessionId,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    };
-    try {
-      const data = await axios(config).then((response) => response.status);
-      return data
-    } catch (error) {
-      console.log(error);
-      return Promise.reject();
-    }
-  }
-
-  public async Register(providerId: string, sessionExpires: Date) {
-    var data = JSON.stringify({
-      "proiverId": providerId,
-      "sessionExpires": sessionExpires
-    });
-
-    const config: AxiosRequestConfig = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: 'https://localhost:7236/User',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data: data
     };
     try {
       const data = await axios(config).then((response) => response.data);

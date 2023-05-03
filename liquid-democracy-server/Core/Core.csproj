@@ -7,8 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BarCode" Version="2023.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="PdfPig" Version="0.1.7" />
+    <PackageReference Include="QRCoder" Version="1.4.3" />
   </ItemGroup>
 
 </Project>
