@@ -17,24 +17,29 @@ public class BallotRepository : IBallotRepository
         _config = config;
     }
 
-    public async Task<Ballot?> CreateAsync(string candidateId, string uuid, string documentId)
+    public async Task<Ballot?> CreateAsync(string candidateId, string sessionUuid, string documentId)
     {
         Thread.Sleep(4000);
         var token = await GetToken();
         var documentInformation = await GetDocumentInfo(documentId, token);
-        var signerUuid = GetUuidForSigner(documentInformation);
+        var isSuccesfull = GetStatusForDocument(documentInformation);
 
-        if (uuid != signerUuid)
+        if(!isSuccesfull)
+        {
+            throw new Exception("The document is not signed");
+        }
+
+        var signerUuid = GetUuidForSigner(documentInformation);
+        
+        if (sessionUuid != signerUuid)
         {
             throw new Exception("This is not the authenticated signer");
         }
 
-
         var nonce = GenerateNoncee();
         var timeStamp = DateTime.Now.ToString();
 
-
-        var originalDataSet = new List<string> { candidateId, uuid, timeStamp, nonce };
+        var originalDataSet = new List<string> { candidateId, sessionUuid, timeStamp, nonce };
 
         var rootHash = new MerkleTree(originalDataSet).RootHash;
         var ballot = new Ballot
@@ -43,7 +48,7 @@ public class BallotRepository : IBallotRepository
             Uuid = null,
             TimeStamp = null,
             Nonce = null,
-            DocumentId = documentId,
+            DocumentId = null,
             RootHash = rootHash
         };
 
@@ -52,12 +57,22 @@ public class BallotRepository : IBallotRepository
 
         var keys = RSAEncryption.CreateAndAddKeysToStorage(ballot.BallotId);
         ballot.CandidateId = RSAEncryption.EncryptVoteAsString(candidateId, keys.publicKey);
-        ballot.Uuid = RSAEncryption.EncryptVoteAsString(uuid, keys.publicKey);
+        ballot.Uuid = RSAEncryption.EncryptVoteAsString(sessionUuid, keys.publicKey);
         ballot.TimeStamp = RSAEncryption.EncryptVoteAsString(timeStamp, keys.publicKey);
         ballot.Nonce = RSAEncryption.EncryptVoteAsString(nonce, keys.publicKey);
+        ballot.DocumentId = RSAEncryption.EncryptVoteAsString(documentId, keys.publicKey);
 
         await _context.SaveChangesAsync();
         return ballot;
+    }
+
+    private bool GetStatusForDocument(DocumentInformation documeentInformation)
+    {
+        var status = documeentInformation.status.documentStatus;
+        if (status == "signed"){
+            return true;
+        }
+        return false;
     }
 
     private string GenerateNoncee()
@@ -139,13 +154,6 @@ public class BallotRepository : IBallotRepository
     {
         var token = await GetToken();
         var encryptedBallot = await GetBallotByIdAsync(ballotId);
-        var documentInformation = await GetDocumentInfo(encryptedBallot.DocumentId, token);
-        var isSigned = IsDocumentSigned(documentInformation);
-
-        if (encryptedBallot == null || !isSigned)
-        {
-            return null;
-        }
 
         var keys = RSAEncryption.RetrieveKeys(ballotId);
 
@@ -153,6 +161,15 @@ public class BallotRepository : IBallotRepository
         var decryptedProviderId = RSAEncryption.DecryptVoteFromString(encryptedBallot.Uuid, keys.privateKey);
         var decryptedTimeStamp = RSAEncryption.DecryptVoteFromString(encryptedBallot.TimeStamp, keys.privateKey);
         var decryptedNonce = RSAEncryption.DecryptVoteFromString(encryptedBallot.Nonce, keys.privateKey);
+        var decryptedDocumentId = RSAEncryption.DecryptVoteFromString(encryptedBallot.DocumentId, keys.privateKey);
+
+        var documentInformation = await GetDocumentInfo(decryptedDocumentId, token);
+        var isSigned = IsDocumentSigned(documentInformation);
+
+        if (encryptedBallot == null || !isSigned)
+        {
+            return null;
+        }
 
         var originalDataSet = new List<string> { decryptedCandidateId, decryptedProviderId, decryptedTimeStamp, decryptedNonce};
         var originalRH = new MerkleTree(originalDataSet).RootHash;
@@ -169,7 +186,7 @@ public class BallotRepository : IBallotRepository
             Uuid = decryptedProviderId,
             TimeStamp = decryptedTimeStamp,
             Nonce = decryptedNonce,
-            DocumentId = encryptedBallot.DocumentId,
+            DocumentId = decryptedDocumentId,
             RootHash = originalRH
         };
         return decryptetBallot;

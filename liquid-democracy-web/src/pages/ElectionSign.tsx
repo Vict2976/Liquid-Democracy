@@ -17,6 +17,11 @@ async function finalizeSign(electionId: number, candidateId: number) {
   }
   const sessionResponse = await authenticateService.GetSessionInformation(sessionId)
   const UUID = sessionResponse.identity.attributes["mitid.uuid"]
+  const status = sessionResponse.status
+  console.log(status);
+  if (status != "success"){
+    return
+  }
   signingService.SignVoteForCandidate(UUID, electionId, candidateId)
 }
 
