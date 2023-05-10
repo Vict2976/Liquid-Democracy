@@ -84,4 +84,12 @@ public class ElectionRepository : IElectionRepository
             Model = election
         };      
     }
+
+    public async Task<int> GetLatestBallotId()
+    {
+        var latest = await _context.Ballots
+                           .OrderByDescending(b => b.BallotId)
+                           .FirstOrDefaultAsync();        
+        return latest.BallotId;
+    }
 }

@@ -1,27 +1,42 @@
+using System.IO;
+using QRCoder;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
-using UglyToad.PdfPig.Content;
-using UglyToad.PdfPig.Core;
-using UglyToad.PdfPig.Fonts.Standard14Fonts;
-using UglyToad.PdfPig.Writer;
-
-public class MakePDF{
-
-    public void createBallot(string electionName, string candidateName)
+public class MakePDF
+{
+    public void createBallot(string candidateName, string electionName, int ballotId)
     {
-        PdfDocumentBuilder builder = new PdfDocumentBuilder();
+        Document document = new Document(PageSize.A4);
 
-        PdfDocumentBuilder.AddedFont times = builder.AddStandard14Font(Standard14Font.TimesRoman);
+        using (FileStream stream = new FileStream("Vote.pdf", FileMode.Create))
+        {
 
-        PdfPageBuilder page = builder.AddPage(PageSize.A4);
+            PdfWriter.GetInstance(document, stream);
+            document.Open();
 
-        PdfPoint closeToTop = new PdfPoint(15, page.PageSize.Top - 25);
+            PdfPTable table = new PdfPTable(1);
+            PdfPCell cell = new PdfPCell();
+            cell.Border = PdfPCell.NO_BORDER;
 
-        page.AddText("VotingInformation", 12, closeToTop, times);
-        page.AddText("Congratulations, you have voted!", 10, closeToTop.Translate(0, -20), times);
-        page.AddText("Election you are voting in: "+ electionName, 10, closeToTop.Translate(0, -40), times);
-        page.AddText("The Candidate you are voting for is: " + candidateName, 10, closeToTop.Translate(0, -60), times);
+            cell.AddElement(new Paragraph("Voting Information"));
+            cell.AddElement(new Paragraph("You have voted for the following election: " + electionName));
+            cell.AddElement(new Paragraph("You have voted for the following candidate: " + candidateName));
+            cell.AddElement(new Paragraph("To see your ballot on the bullentin board, scan the QR once approved, this QR code will only be active for 10 minutes"));
+            table.AddCell(cell);
+            document.Add(table);
 
-        File.WriteAllBytes("./Vote.pdf", builder.Build());
+            string qrCodeText = "Your ballotId is: " + ballotId;
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrCodeText, QRCodeGenerator.ECCLevel.Q);
+            BitmapByteQRCode qrCode = new BitmapByteQRCode(qrCodeData);
+            byte[] qrCodeImage = qrCode.GetGraphic(20);
 
+            iTextSharp.text.Image qrCodePdfImage = iTextSharp.text.Image.GetInstance(qrCodeImage);
+            qrCodePdfImage.Alignment = Element.ALIGN_MIDDLE;
+            document.Add(qrCodePdfImage);
+
+            document.Close();
+        }
     }
 }

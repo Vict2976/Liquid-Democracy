@@ -38,8 +38,11 @@ public class SignatureController : ControllerBase
 
     var candidateIdAsString = candidate.CandidateId.ToString();
 
+    var latest = await _electionRepo.GetLatestBallotId();
+    var ballotId = latest + 1;
+    
     MakePDF makePdf = new MakePDF();
-    makePdf.createBallot(election.Name, candidate.Name);
+    makePdf.createBallot(candidate.Name, election.Name, ballotId);
 
 
     // Get local file to be signed
