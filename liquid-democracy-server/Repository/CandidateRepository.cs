@@ -14,7 +14,7 @@ public class CandidateRepository : ICandidateRepository
     public async Task<Candidate?> CreateAsync(string name, int electionId){
 
         var originalDataSet = new List<string>{name, electionId.ToString()};
-        var rootHash = new MerkleTree(originalDataSet).RootHash;
+        var rootHash = new Security.MerkleTree(originalDataSet).RootHash;
 
         var candidate = new Candidate
             {

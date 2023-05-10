@@ -16,7 +16,6 @@ function HomePage() {
 
   useEffect(() => {
     electionService.getAllElections().then((response) => {
-      //console.log(response);
       setElections(response);
     });
   }, []);

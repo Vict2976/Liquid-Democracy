@@ -10,9 +10,6 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.WriteIndented = true;
 });
 
-builder.Services.Configure<HashSettings>(builder.Configuration.GetSection(nameof(HashSettings)));
-builder.Services.AddScoped<IHasher, Hasher>();
-
 builder.Services.AddDbContext<LiquidDemocracyContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("liquiddemocracy")));
 builder.Services.AddScoped<ILiquidDemocracyContext, LiquidDemocracyContext>();

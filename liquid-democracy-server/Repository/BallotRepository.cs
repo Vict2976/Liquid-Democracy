@@ -41,7 +41,7 @@ public class BallotRepository : IBallotRepository
 
         var originalDataSet = new List<string> { candidateId, sessionUuid, timeStamp, nonce };
 
-        var rootHash = new MerkleTree(originalDataSet).RootHash;
+        var rootHash = new Security.MerkleTree(originalDataSet).RootHash;
         var ballot = new Ballot
         {
             CandidateId = null,
@@ -172,7 +172,7 @@ public class BallotRepository : IBallotRepository
         }
 
         var originalDataSet = new List<string> { decryptedCandidateId, decryptedProviderId, decryptedTimeStamp, decryptedNonce};
-        var originalRH = new MerkleTree(originalDataSet).RootHash;
+        var originalRH = new Security.MerkleTree(originalDataSet).RootHash;
 
         if (encryptedBallot.RootHash != originalRH)
         {

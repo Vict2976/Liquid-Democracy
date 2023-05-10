@@ -18,7 +18,7 @@ public class ElectionRepository : IElectionRepository
 
         var originalDataSet = new List<string>{name, description, createdDate.ToString()}; //No candidates
 
-        var rootHash = new MerkleTree(originalDataSet).RootHash;
+        var rootHash = new Security.MerkleTree(originalDataSet).RootHash;
 
         var election = new Election
             {
@@ -29,13 +29,12 @@ public class ElectionRepository : IElectionRepository
                 RootHash = rootHash
             };
         _context.Elections.Add(election);
-
         await _context.SaveChangesAsync();
 
         foreach (var candidate in candidates){
             await _candidateRepository.CreateAsync(candidate, election.ElectionId);
         }
-
+        
         return election;
     }
 

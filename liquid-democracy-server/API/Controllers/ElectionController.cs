@@ -14,7 +14,6 @@ public class ElectionController : ControllerBase
         _repository = repository;
     }
 
-    [AllowAnonymous]
     [HttpPost]
     [ProducesResponseType(typeof(Election), 201)]
     [ProducesResponseType(400)]
