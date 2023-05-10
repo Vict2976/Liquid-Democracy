@@ -11,6 +11,7 @@ public class Election
     public bool IsEnded {get; set;}
     public DateTime CreatedDate { get; set; }
     public string? RootHash { get; set; }
+    public string? LatestHash { get; set;}
 
     public ICollection<Candidate> Candidates { get; set; }
 

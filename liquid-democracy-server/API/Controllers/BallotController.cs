@@ -83,4 +83,15 @@ public class BallotController : ControllerBase
         return response.ToList();
     }
 
+    [AllowAnonymous]
+    [HttpGet]
+    [Route("/TestHashChain/")]
+    [ProducesResponseType(typeof(IEnumerable<Ballot>), 200)]
+    [ProducesResponseType(400)]
+    public async Task<ActionResult<bool>> VerifyHash(int electionid)
+    {
+        var response = await _repository.VerifyHashChain(electionid);
+        return response;
+    }
+
 }

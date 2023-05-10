@@ -10,7 +10,6 @@ public class BallotRepository : IBallotRepository
 {
     ILiquidDemocracyContext _context;
     private readonly IConfiguration _config;
-
     public BallotRepository(ILiquidDemocracyContext context, IConfiguration config)
     {
         _context = context;
@@ -63,7 +62,23 @@ public class BallotRepository : IBallotRepository
         ballot.DocumentId = RSAEncryption.EncryptVoteAsString(documentId, keys.publicKey);
 
         await _context.SaveChangesAsync();
+
+        await updateElectionHashChain(candidateId, rootHash);
         return ballot;
+    }
+
+    private async Task updateElectionHashChain(string candidateId, string rootHash)
+    {
+        var intCandidateId = int.Parse(candidateId);
+        var currentCandidate = await _context.Candidates.Where(c => c.CandidateId == intCandidateId).FirstAsync();
+        if (currentCandidate != null){
+            var currentElection = await _context.Elections.Where(e => e.ElectionId == currentCandidate.ElectionId).FirstAsync();
+            var newChain = new Security.HashChain(currentElection.LatestHash);
+            newChain.AddToChain(rootHash);
+            currentElection.LatestHash = newChain.GetLatestHash();
+            Console.WriteLine("NEWHASH" + newChain.GetLatestHash());
+            await _context.SaveChangesAsync();
+        }
     }
 
     private bool GetStatusForDocument(DocumentInformation documeentInformation)
@@ -89,6 +104,44 @@ public class BallotRepository : IBallotRepository
 
         string randomString = stringBuilder.ToString();
         return randomString;
+    }
+
+    public async Task<bool> VerifyHashChain(int electionId)
+    {
+        var candidates = await _context.Candidates.Where(c => c.ElectionId == electionId).ToListAsync();
+        
+        var candidateIds = new HashSet<int>();
+        var rootHashes = new List<string>();
+
+        foreach(var candidate in candidates){
+            candidateIds.Add(candidate.CandidateId);
+        }
+
+        var ballots = await _context.Ballots.ToListAsync();
+
+        foreach (var ballot in ballots){
+            var decryptetBallot = await DecryptBallotById(ballot.BallotId);
+            if (candidateIds.Contains(int.Parse(decryptetBallot.CandidateId)))
+            {
+                rootHashes.Add(decryptetBallot.RootHash);
+            }
+        }
+
+        var genesisBlock = _config["HashChain:GenesisBlock"]; 
+        var hashChain = new Security.HashChain(genesisBlock);
+        foreach (var rootHash in rootHashes){
+            hashChain.AddToChain(rootHash);
+        }
+
+        var electionToCheck = await _context.Elections.Where(e => e.ElectionId == electionId).FirstAsync();
+        Console.WriteLine("Stored" + electionToCheck.LatestHash);
+        Console.WriteLine("Created" + hashChain.GetLatestHash());
+
+        if (electionToCheck.LatestHash == hashChain.GetLatestHash()){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public async Task<Ballot?> GetBallotByIdAsync(int ballotId)
@@ -274,28 +327,5 @@ public class BallotRepository : IBallotRepository
             result.Add(mostRecentBallot);
         }
         return result;
-    }
-
-    private async Task<bool> CheckIntegrityByRH()
-    {
-        //Get ballot from repo
-        //Decrypt everything
-        //Build merkleTreee
-        //Does the roothashes Match?
-
-        throw new NotImplementedException();
-    }
-
-    private string Decrypt(string cipherText, string key)
-    {
-        try
-        {
-            var decryptedCipherText = EncryptionHelper.Decrypt(cipherText, key);
-            return decryptedCipherText;
-        }
-        catch (Exception e)
-        {
-            throw new Exception("Ballot has been tampered with");
-        }
     }
 }

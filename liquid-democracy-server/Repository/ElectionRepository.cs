@@ -1,5 +1,6 @@
 using Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Repository;
 
@@ -7,11 +8,14 @@ public class ElectionRepository : IElectionRepository
 {
     ILiquidDemocracyContext _context;
     ICandidateRepository _candidateRepository;
+    private readonly IConfiguration _config;
 
-    public ElectionRepository(ILiquidDemocracyContext context, ICandidateRepository candidateRepository)
+
+    public ElectionRepository(ILiquidDemocracyContext context, ICandidateRepository candidateRepository, IConfiguration config)
     {
         _context = context;
         _candidateRepository = candidateRepository;
+        _config = config;
     }
 
     public async Task<Election?> CreateAsync(string name, string description, DateTime createdDate, ICollection<string> candidates){
@@ -19,6 +23,9 @@ public class ElectionRepository : IElectionRepository
         var originalDataSet = new List<string>{name, description, createdDate.ToString()}; //No candidates
 
         var rootHash = new Security.MerkleTree(originalDataSet).RootHash;
+        
+        var genesisBlock = _config["HashChain:GenesisBlock"]; 
+        var hashChain = new Security.HashChain(genesisBlock);
 
         var election = new Election
             {
@@ -26,7 +33,8 @@ public class ElectionRepository : IElectionRepository
                 Description = description,
                 CreatedDate = createdDate,
                 IsEnded = false,
-                RootHash = rootHash
+                RootHash = rootHash,
+                LatestHash = hashChain.GetLatestHash()
             };
         _context.Elections.Add(election);
         await _context.SaveChangesAsync();
@@ -34,7 +42,7 @@ public class ElectionRepository : IElectionRepository
         foreach (var candidate in candidates){
             await _candidateRepository.CreateAsync(candidate, election.ElectionId);
         }
-        
+
         return election;
     }
 

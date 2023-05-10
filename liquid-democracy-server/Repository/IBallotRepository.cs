@@ -7,5 +7,7 @@ public interface IBallotRepository
     public Task<DocumentInformation> GetDocumentInfo(string documentId, string token);
     public Task<IEnumerable<Ballot>> FindAndDeleteAllOldVotes();
     public Task<Ballot> DecryptBallotById(int ballotId);
+    public Task<bool> VerifyHashChain(int electionId);
+
 
 }

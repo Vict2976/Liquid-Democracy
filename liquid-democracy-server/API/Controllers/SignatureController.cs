@@ -20,19 +20,6 @@ public class SignatureController : ControllerBase
         _candidateRepo = candidateRepo;
         _electionRepo = electionRepository;
     }
-
-/*     [AllowAnonymous]
-    [Route("/Verify/{electionId}")]
-    [HttpGet]
-    [ProducesResponseType(typeof(Election), 200)]
-    public async Task<bool> VerifyElection(int electionId){
-        var allvotes = await _repository.ReadFromElectionId(electionId);
-        foreach(var vote in allvotes){
-            var isVerified = await isDocumentSigned(vote.DocumentId);
-            if (!isVerified) return false;
-        }
-        return true;
-    } */
     
     [AllowAnonymous]
     [HttpGet]
