@@ -1,6 +1,6 @@
 namespace Server.Controllers;
 
-using Core;
+using DataModels;
 using Repository;
 
 [ApiController]

@@ -1,4 +1,4 @@
-using Core;
+using DataModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -89,7 +89,12 @@ public class ElectionRepository : IElectionRepository
     {
         var latest = await _context.Ballots
                            .OrderByDescending(b => b.BallotId)
-                           .FirstOrDefaultAsync();        
-        return latest.BallotId;
+                           .FirstOrDefaultAsync();    
+
+        if (latest == null){
+            return 1;
+        }else{
+            return latest.BallotId;
+        }
     }
 }

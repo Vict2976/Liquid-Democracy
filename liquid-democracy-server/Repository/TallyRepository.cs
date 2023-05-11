@@ -16,12 +16,12 @@ public class TallyRepository : ITallyRepository
         var allEntrys = await _context.Tallies.ToListAsync();
         
         var mostCommon = allEntrys
-            .GroupBy(i => i)
-            .OrderByDescending(g => g.Count())
+            .GroupBy(i => i.candidateId)
+            .OrderBy(g => g.Count())
             .Select(g => g.Key)
-            .FirstOrDefault();
+            .LastOrDefault();
 
-        var winnerId = mostCommon.candidateId;
+        var winnerId = mostCommon;
 
         var winner = await _context.Candidates.Where(c => c.CandidateId == winnerId).FirstAsync();
 

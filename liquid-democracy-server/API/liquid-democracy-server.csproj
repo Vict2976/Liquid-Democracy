@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../Repository/Repository.csproj" />
-    <ProjectReference Include="../Core/Core.csproj" />
+    <ProjectReference Include="../DataModels/DataModels.csproj" />
     <ProjectReference Include="../Security/Security.csproj" />
   </ItemGroup>
 

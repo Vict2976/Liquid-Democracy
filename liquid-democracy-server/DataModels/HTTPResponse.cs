@@ -1,4 +1,4 @@
-namespace Core;
+namespace DataModels;
 
 public enum HTTPResponse
 {

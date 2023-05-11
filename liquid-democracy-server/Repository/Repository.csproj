@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../Security/Security.csproj" />
-    <ProjectReference Include="../Core/Core.csproj" />
+    <ProjectReference Include="../DataModels/DataModels.csproj" />
   </ItemGroup>
 
 </Project>

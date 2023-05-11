@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Core;
+namespace DataModels;
 
 public class Response
 {
