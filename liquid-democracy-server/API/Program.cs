@@ -16,6 +16,7 @@ builder.Services.AddScoped<ILiquidDemocracyContext, LiquidDemocracyContext>();
 builder.Services.AddScoped<ICandidateRepository, CandidateRepository>();
 builder.Services.AddScoped<IElectionRepository, ElectionRepository>();
 builder.Services.AddScoped<IBallotRepository, BallotRepository>();
+builder.Services.AddScoped<ITallyRepository, TallyRepository>();
 // Add services to the container.
 
 builder.Services.AddControllers();
