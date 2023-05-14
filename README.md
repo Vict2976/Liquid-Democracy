@@ -5,7 +5,7 @@ Online voting platform based on MitID
 1. Initialise User Secrets (See Guide to User Secrets)
 2. Run ./setup.ps1 pwsh script
 3. Start the backend, dotnet run
-4. Start the frontend, npm start
+4. Start the frontend, npm i -> npm start
 
 # Guide to User Secrets
 - Create your local secrets (should contain starting value for hash chain and signicat credentials)
