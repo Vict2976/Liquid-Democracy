@@ -1,5 +1,5 @@
 # Liquid-Democracy
-Online voting platform for Liquid democracy 
+Online voting platform based on MitID 
 
 Kill the process:
 lsof -i tcp:7236 
