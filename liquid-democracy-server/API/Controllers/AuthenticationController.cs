@@ -45,6 +45,7 @@ namespace Server
                     ErrorUrl = "https://www.google.com/search?q=error&oq=error&aqs=chrome..69i57j35i39l2j0i512l2j69i60l3.1236j0j4&sourceid=chrome&ie=UTF-8",
                     AbortUrl = "https://www.signicat.com#abort",
                     SuccessUrl = "http://localhost:3000/Election/sign/" + electionId
+                    
                 },
                 ExternalReference = Guid.NewGuid().ToString("n"),
                 Flow = IdSessionFlow.Redirect,

@@ -55,6 +55,7 @@ public class BallotRepository : IBallotRepository
         await _context.SaveChangesAsync();
 
         var keys = RSAEncryption.CreateAndAddKeysToStorage(ballot.BallotId);
+        
         ballot.CandidateId = RSAEncryption.EncryptVoteAsString(candidateId, keys.publicKey);
         ballot.Uuid = RSAEncryption.EncryptVoteAsString(sessionUuid, keys.publicKey);
         ballot.TimeStamp = RSAEncryption.EncryptVoteAsString(timeStamp, keys.publicKey);
@@ -76,7 +77,6 @@ public class BallotRepository : IBallotRepository
             var newChain = new Security.HashChain(currentElection.LatestHash);
             newChain.AddToChain(rootHash);
             currentElection.LatestHash = newChain.GetLatestHash();
-            Console.WriteLine("NEWHASH" + newChain.GetLatestHash());
             await _context.SaveChangesAsync();
         }
     }
@@ -134,8 +134,6 @@ public class BallotRepository : IBallotRepository
         }
 
         var electionToCheck = await _context.Elections.Where(e => e.ElectionId == electionId).FirstAsync();
-        Console.WriteLine("Stored" + electionToCheck.LatestHash);
-        Console.WriteLine("Created" + hashChain.GetLatestHash());
 
         if (electionToCheck.LatestHash == hashChain.GetLatestHash()){
             return true;
@@ -171,11 +169,6 @@ public class BallotRepository : IBallotRepository
         }
     }
 
-    //Foreach Ballot, call DecryptBallotById and add to list
-    //Foreach Ballot in decryptet list, check for same provider id
-    //For entries with same provider ID find newest Timestamp
-    //Check for tamper and validity
-    //Add to new database, only encryptet candidateId
     public async Task<IEnumerable<Ballot>> FindAndDeleteAllOldVotes()
     {
         var allBallots = await _context.Ballots.ToListAsync();

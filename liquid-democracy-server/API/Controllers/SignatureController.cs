@@ -107,7 +107,7 @@ public class SignatureController : ControllerBase
         // Optional: Retrieve social security number of signer(s)
         Advanced = new Advanced()
         {
-            GetSocialSecurityNumber = true,
+            GetSocialSecurityNumber = false,
         },
 
         // The document to be signed and format
@@ -146,6 +146,7 @@ public class SignatureController : ControllerBase
             }
         },
         ExternalSignerId = Guid.NewGuid().ToString(),
+        GetSocialSecurityNumber = false
     };
 
     var test = res.Signers.FirstOrDefault().Id;

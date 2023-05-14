@@ -4,9 +4,9 @@ using System.Security.Cryptography;
 
 public static class KeyStorage
 {
-    public static readonly ConcurrentDictionary<string, RSAParameters> keyDictionary = new ConcurrentDictionary<string, RSAParameters>();
+    public static readonly ConcurrentDictionary<string, string> keyDictionary = new ConcurrentDictionary<string, string>();
 
-    public static void AddKey(string keyId, RSAParameters key)
+    public static void AddKey(string keyId, string key)
     {
         if (!keyDictionary.TryAdd(keyId, key))
         {
@@ -14,9 +14,9 @@ public static class KeyStorage
         }
     }
 
-    public static RSAParameters GetKey(string keyId)
+    public static string GetKey(string keyId)
     {
-        if (!keyDictionary.TryGetValue(keyId, out RSAParameters key))
+        if (!keyDictionary.TryGetValue(keyId, out string key))
         {
             throw new Exception($"Key with id {keyId} not found");
         }

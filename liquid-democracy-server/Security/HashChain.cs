@@ -16,11 +16,9 @@ public class HashChain
     {
         using (SHA256 sha256 = SHA256.Create())
         {
-            // Combine previous hash and input to form new hash input
             string previousHash = _hashChain[_hashChain.Count - 1];
             string combinedInput = previousHash + input;
 
-            // Compute new hash and add it to the hash chain
             byte[] newHashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(combinedInput));
             string newHash = BitConverter.ToString(newHashBytes).Replace("-", "");
             _hashChain.Add(newHash);
